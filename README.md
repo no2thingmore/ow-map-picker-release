@@ -19,9 +19,9 @@
 
 <p align="center"><sub>맵 → 밴 → 아군·적군 순으로 정보가 들어올 때마다 추천이 갱신됩니다. (시험용 화면)</sub></p>
 
+<a name="features"></a>
 <br>
 
-<a name="features"></a>
 <img src="docs/readme/sec-features.svg" alt="주요 기능" width="420">
 
 <p align="center">
@@ -33,9 +33,9 @@
 <img src="docs/readme/card-update.svg" alt="자동 업데이트" width="400">
 </p>
 
+<a name="install"></a>
 <br>
 
-<a name="install"></a>
 <img src="docs/readme/sec-install.svg" alt="설치 방법" width="420">
 
 Windows 10/11 64비트에서 동작합니다.
@@ -72,9 +72,9 @@ Windows 10/11 64비트에서 동작합니다.
 
 </details>
 
+<a name="usage"></a>
 <br>
 
-<a name="usage"></a>
 <img src="docs/readme/sec-usage.svg" alt="사용 방법" width="420">
 
 1. 프로그램을 켜 둔 채 오버워치를 실행합니다. 선호 영웅 선택·영웅 선택 화면에서 맵과 내 영웅이 자동으로 표시됩니다.
@@ -87,9 +87,9 @@ Windows 10/11 64비트에서 동작합니다.
 
 자세한 사용법은 프로그램 폴더의 `사용법.txt` 에서 확인할 수 있습니다. 간편 설치를 했다면 프로그램 폴더는 `%LOCALAPPDATA%\OW-MapPicker` 입니다.
 
+<a name="screens"></a>
 <br>
 
-<a name="screens"></a>
 <img src="docs/readme/sec-screens.svg" alt="화면 구성" width="420">
 
 ### 추천 화면
@@ -162,9 +162,9 @@ Windows 10/11 64비트에서 동작합니다.
 - 버전별 변경 사항은 오른쪽 위 "v… 업데이트 내역"에서 확인할 수 있습니다.
 - 사진으로 보는 변경 사항 (개선 전 / 개선 후): [v0.7.2](docs/releases/v0.7.2.md) 화면 움직임 · [v0.7.0](docs/releases/v0.7.0.md) 추천 목록·상대 카운터·상성 계산 · [v0.6.5](docs/releases/v0.6.5.md) 점수판 인식 · [v0.6.4](docs/releases/v0.6.4.md) 오버레이 · [v0.6.3](docs/releases/v0.6.3.md)
 
+<a name="trouble"></a>
 <br>
 
-<a name="trouble"></a>
 <img src="docs/readme/sec-trouble.svg" alt="문제 해결" width="420">
 
 | 증상 | 해결 방법 |
@@ -174,9 +174,9 @@ Windows 10/11 64비트에서 동작합니다.
 | **0&#8288;.&#8288;2&#8288;.&#8288;0&nbsp;실&#8288;행&#8288;기** | 0.2.0 버전의 간편 실행기를 쓰고 있다면 [OW-MapPicker.bat](https://github.com/no2thingmore/ow-map-picker-release/releases/latest/download/OW-MapPicker.bat) 을 한 번 다시 내려받아 실행해 주세요. 실행기만 교체되며 기록은 유지됩니다. |
 | **그&nbsp;밖&#8288;의&nbsp;문&#8288;제** | 검은 창의 내용과 문제가 생긴 시점의 게임 화면 스크린샷을 제작자에게 보내 주세요. |
 
+<a name="notice"></a>
 <br>
 
-<a name="notice"></a>
 <img src="docs/readme/sec-notice.svg" alt="안내 사항" width="420">
 
 - 개인이 만든 **비공식** 도구이며, 블리자드·넥슨과 관련이 없습니다.
