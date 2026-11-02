@@ -15,7 +15,7 @@
 
 <p align="center"><a href="#install">설치</a> · <a href="#usage">사용 방법</a> · <a href="#screens">화면 구성</a> · <a href="#trouble">문제 해결</a> · <a href="#notice">안내 사항</a></p>
 
-<img src="docs/match.gif" alt="판 정보가 들어올수록 추천이 바뀌는 모습" width="100%">
+<img src="docs/readme/slides.svg" alt="판 정보가 들어올수록 추천이 바뀌는 모습 (5장면)" width="100%">
 
 <p align="center"><sub>맵 → 밴 → 아군·적군 순으로 정보가 들어올 때마다 추천이 갱신됩니다. (시험용 화면)</sub></p>
 

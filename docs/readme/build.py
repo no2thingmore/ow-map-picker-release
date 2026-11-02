@@ -6,7 +6,7 @@ PC(README 폭 약 830px)와 휴대폰(약 343px) 모두에서 글자가 읽히�
 - 구간 제목은 표시 폭 420 고정 → PC·휴대폰 크기가 거의 같음
 
 글꼴은 Noto Sans KR(OFL)에서 쓰는 글자만 잘라 SVG 안에 넣는다 → 보는 PC에 글꼴이 없어도 똑같이 보임.
-사용: python build.py <fonttools·Pillow 경로> <출력 폴더> <main.png 경로>
+사용: python build.py <fonttools·Pillow 경로> <출력 폴더> <main.png 경로> [match.gif 경로 → slides.svg도 만듦]
 """
 import base64
 import io
@@ -199,7 +199,64 @@ def sections():
         write(f"sec-{key}.svg", svg(W, H, body, {"B": eb, "H": a + b}, (420, 88)))
 
 
+# ---------- 장면 슬라이드 (match.gif의 장면을 옆으로 밀며 넘김) ----------
+def slides(gif, hold=3.8, move=0.7):
+    from PIL import ImageSequence
+    frames = []
+    for f in ImageSequence.Iterator(Image.open(gif)):
+        buf = io.BytesIO()
+        f.convert("RGB").quantize(256).save(buf, "PNG", optimize=True)
+        frames.append(base64.b64encode(buf.getvalue()).decode())
+    w, h = Image.open(gif).size
+    n = len(frames)
+    BAR = 64
+    W, H = w, h + BAR
+    T = n * hold
+    # 장면 i를 보여 주다가 (i+1)*hold - move 부터 다음 장면으로 미끄러짐. 마지막엔 1장 복사본으로 넘어간 뒤 처음으로 순간 이동 → 끊김 없이 반복
+    def keys(step):
+        out = ["0%{transform:translateX(0)}"]
+        for i in range(n):
+            a = ((i + 1) * hold - move) / T * 100
+            b = (i + 1) * hold / T * 100
+            out.append(f"{a:.3f}%{{transform:translateX({-i * step}px);animation-timing-function:cubic-bezier(.65,0,.35,1)}}")
+            out.append(f"{b:.3f}%{{transform:translateX({-(i + 1) * step}px)}}")
+        return "".join(out)
+    DOT, GAP = 14, 30
+    dots_w = (n - 1) * GAP
+    dx0 = W / 2 - dots_w / 2
+    # 진행 점: 밝은 점이 다음 점으로 이동, 마지막엔 첫 점으로 돌아감
+    dot_keys = ["0%{transform:translateX(0)}"]
+    for i in range(n):
+        a = ((i + 1) * hold - move) / T * 100
+        b = (i + 1) * hold / T * 100
+        nxt = (i + 1) % n
+        dot_keys.append(f"{a:.3f}%{{transform:translateX({i * GAP}px);animation-timing-function:cubic-bezier(.65,0,.35,1)}}")
+        dot_keys.append(f"{b:.3f}%{{transform:translateX({nxt * GAP}px)}}")
+    images = "".join(f'<image href="data:image/png;base64,{d}" x="{i * w}" width="{w}" height="{h}"/>' for i, d in enumerate(frames))
+    dots = "".join(f'<circle cx="{dx0 + i * GAP}" cy="{h + BAR / 2}" r="{DOT / 2 - 2}" fill="#3a404d"/>' for i in range(n))
+    arrow = lambda x, d: (f'<g transform="translate({x} {h / 2})"><circle r="30" fill="#0d0f13" fill-opacity=".72" stroke="#ffffff" stroke-opacity=".18" stroke-width="2"/>'
+                          f'<path d="{d}" fill="none" stroke="{ORG}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>')
+    body = f"""
+<style>
+.track{{animation:slide {T}s infinite}} @keyframes slide{{{keys(w)}}}
+.cur{{animation:dot {T}s infinite}} @keyframes dot{{{"".join(dot_keys)}}}
+.nx{{animation:nudge {T / n}s infinite}} @keyframes nudge{{0%,70%,100%{{opacity:.75}}82%{{opacity:1;transform:translateX(6px)}}}}
+@media (prefers-reduced-motion: reduce){{.track,.cur,.nx{{animation:none}}}}
+</style>
+<rect width="{W}" height="{H}" rx="18" fill="{BG}"/>
+<clipPath id="frame"><rect width="{w}" height="{h}" rx="18"/></clipPath>
+<g clip-path="url(#frame)"><g class="track">{images}<image href="data:image/png;base64,{frames[0]}" x="{n * w}" width="{w}" height="{h}"/></g></g>
+{arrow(48, "M7 -12L-5 0L7 12")}
+<g class="nx">{arrow(W - 48, "M-7 -12L5 0L-7 12")}</g>
+{dots}
+<g class="cur"><rect x="{dx0 - 13}" y="{h + BAR / 2 - 6}" width="26" height="12" rx="6" fill="{ORG}"/></g>
+"""
+    write("slides.svg", svg(W, H, body, {}))
+
+
 hero()
 buttons()
 features()
 sections()
+if len(sys.argv) > 4:
+    slides(sys.argv[4])
