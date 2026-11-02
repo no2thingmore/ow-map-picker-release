@@ -1,36 +1,42 @@
-<div align="center">
+<!-- 표 첫 칸 글자 사이의 &#8288; 는 화면이 좁아도 한 글자씩 줄바꿈되지 않게 막는 보이지 않는 문자입니다. -->
 
-# 오버워치 영웅 선택 가이드
+<a href="https://github.com/no2thingmore/ow-map-picker-release/releases/latest"><img src="docs/readme/hero.svg" alt="이번 판, 고민 없이 픽. 맵·밴·양 팀 조합을 화면에서 읽고 공식 통계와 상성으로 영웅을 추천합니다." width="100%"></a>
 
-게임 화면을 인식해 **맵·밴·양 팀 조합에 맞는 영웅을 추천**하는 Windows용 도구입니다.
+<p align="center">
+<a href="https://github.com/no2thingmore/ow-map-picker-release/releases/latest/download/OW-MapPicker.bat"><img src="docs/readme/btn-download.svg" alt="무료로 받기" width="240"></a>&nbsp;&nbsp;
+<a href="#usage"><img src="docs/readme/btn-guide.svg" alt="사용 방법 보기" width="240"></a>
+</p>
 
-<a href="https://github.com/no2thingmore/ow-map-picker-release/releases/latest"><img src="https://img.shields.io/github/v/release/no2thingmore/ow-map-picker-release?label=%EC%B5%9C%EC%8B%A0%20%EB%B2%84%EC%A0%84&color=f99e1a&labelColor=1c2a42" alt="최신 버전"></a>
-<img src="https://img.shields.io/badge/Windows-10%20%7C%2011%20(64bit)-1c2a42?logo=windows&logoColor=white" alt="Windows 10/11 64bit">
-<img src="https://img.shields.io/badge/%EC%83%81%ED%83%9C-%EB%B2%A0%ED%83%80-1c2a42" alt="베타">
+<p align="center">
+<a href="https://github.com/no2thingmore/ow-map-picker-release/releases/latest"><img src="https://img.shields.io/github/v/release/no2thingmore/ow-map-picker-release?label=%EC%B5%9C%EC%8B%A0%20%EB%B2%84%EC%A0%84&color=f99e1a&labelColor=1b1e25" alt="최신 버전"></a>
+<img src="https://img.shields.io/badge/Windows-10%20%7C%2011%20(64bit)-1b1e25?logo=windows&logoColor=white" alt="Windows 10/11 64bit">
+<img src="https://img.shields.io/badge/%EC%83%81%ED%83%9C-%EB%B2%A0%ED%83%80-1b1e25" alt="베타">
+</p>
 
-[설치](#설치) · [사용 방법](#사용-방법) · [화면 구성](#화면-구성) · [문제 해결](#문제-해결) · [안내 사항](#안내-사항)
+<p align="center"><a href="#install">설치</a> · <a href="#usage">사용 방법</a> · <a href="#screens">화면 구성</a> · <a href="#trouble">문제 해결</a> · <a href="#notice">안내 사항</a></p>
 
 <img src="docs/match.gif" alt="판 정보가 들어올수록 추천이 바뀌는 모습" width="100%">
 
-<sub>맵 → 밴 → 아군·적군 순으로 정보가 들어올 때마다 추천이 갱신됩니다. (시험용 화면)</sub>
+<p align="center"><sub>맵 → 밴 → 아군·적군 순으로 정보가 들어올 때마다 추천이 갱신됩니다. (시험용 화면)</sub></p>
 
-</div>
+<br>
 
-<!-- 표 첫 칸 글자 사이의 &#8288; 는 화면이 좁아도 한 글자씩 줄바꿈되지 않게 막는 보이지 않는 문자입니다. -->
+<a name="features"></a>
+<img src="docs/readme/sec-features.svg" alt="주요 기능" width="420">
 
-## 주요 기능
+<p align="center">
+<img src="docs/readme/card-scan.svg" alt="자동 인식" width="400">
+<img src="docs/readme/card-rank.svg" alt="영웅 추천" width="400">
+<img src="docs/readme/card-overlay.svg" alt="오버레이" width="400">
+<img src="docs/readme/card-phone.svg" alt="폰으로 보기" width="400">
+<img src="docs/readme/card-history.svg" alt="전적·통계" width="400">
+<img src="docs/readme/card-update.svg" alt="자동 업데이트" width="400">
+</p>
 
-| 기능 | 설명 |
-|---|---|
-| **자&#8288;동&nbsp;인&#8288;식** | 선호 영웅·밴 투표·영웅 선택 화면에서 맵과 내 영웅을, 게임 중 점수판(Tab)에서 아군·적군·밴·등급 범위를 읽습니다. |
-| **영&#8288;웅&nbsp;추&#8288;천** | 넥슨 공식 통계(맵·티어별), 상성·시너지(Counterwatch), 팀 조합(포킹·돌진·다이브), 개인 전적을 종합해 점수를 매깁니다. |
-| **오&#8288;버&#8288;레&#8288;이** | 게임 화면 위 작은 창에 1~3순위 추천, 조합 요령, 까다로운 적을 표시합니다. |
-| **모&#8288;바&#8288;일&nbsp;보&#8288;기** | 같은 Wi-Fi에 연결된 휴대폰 브라우저에서 같은 화면을 볼 수 있습니다. |
-| **전&#8288;적&nbsp;기&#8288;록** | 판마다 결과와 조합을 저장하고, 추천을 따랐을 때의 승률을 보여 줍니다. |
-| **통&#8288;계** | 현재 메타 Top 5, 밴률, 맵별·영웅별 픽률과 승률을 표로 제공합니다. |
-| **업&#8288;데&#8288;이&#8288;트** | 새 버전이 나오면 알림을 띄우고, 버튼 한 번으로 교체한 뒤 다시 시작합니다. |
+<br>
 
-## 설치
+<a name="install"></a>
+<img src="docs/readme/sec-install.svg" alt="설치 방법" width="420">
 
 Windows 10/11 64비트에서 동작합니다.
 
@@ -66,7 +72,10 @@ Windows 10/11 64비트에서 동작합니다.
 
 </details>
 
-## 사용 방법
+<br>
+
+<a name="usage"></a>
+<img src="docs/readme/sec-usage.svg" alt="사용 방법" width="420">
 
 1. 프로그램을 켜 둔 채 오버워치를 실행합니다. 선호 영웅 선택·영웅 선택 화면에서 맵과 내 영웅이 자동으로 표시됩니다.
 2. 게임 중 **Tab** (점수판)을 1~2초 누르고 있으면 아군·적군 영웅을 읽어 상성과 시너지를 계산합니다.
@@ -78,7 +87,10 @@ Windows 10/11 64비트에서 동작합니다.
 
 자세한 사용법은 프로그램 폴더의 `사용법.txt` 에서 확인할 수 있습니다. 간편 설치를 했다면 프로그램 폴더는 `%LOCALAPPDATA%\OW-MapPicker` 입니다.
 
-## 화면 구성
+<br>
+
+<a name="screens"></a>
+<img src="docs/readme/sec-screens.svg" alt="화면 구성" width="420">
 
 ### 추천 화면
 
@@ -150,7 +162,10 @@ Windows 10/11 64비트에서 동작합니다.
 - 버전별 변경 사항은 오른쪽 위 "v… 업데이트 내역"에서 확인할 수 있습니다.
 - 사진으로 보는 변경 사항 (개선 전 / 개선 후): [v0.7.2](docs/releases/v0.7.2.md) 화면 움직임 · [v0.7.0](docs/releases/v0.7.0.md) 추천 목록·상대 카운터·상성 계산 · [v0.6.5](docs/releases/v0.6.5.md) 점수판 인식 · [v0.6.4](docs/releases/v0.6.4.md) 오버레이 · [v0.6.3](docs/releases/v0.6.3.md)
 
-## 문제 해결
+<br>
+
+<a name="trouble"></a>
+<img src="docs/readme/sec-trouble.svg" alt="문제 해결" width="420">
 
 | 증상 | 해결 방법 |
 |---|---|
@@ -159,7 +174,10 @@ Windows 10/11 64비트에서 동작합니다.
 | **0&#8288;.&#8288;2&#8288;.&#8288;0&nbsp;실&#8288;행&#8288;기** | 0.2.0 버전의 간편 실행기를 쓰고 있다면 [OW-MapPicker.bat](https://github.com/no2thingmore/ow-map-picker-release/releases/latest/download/OW-MapPicker.bat) 을 한 번 다시 내려받아 실행해 주세요. 실행기만 교체되며 기록은 유지됩니다. |
 | **그&nbsp;밖&#8288;의&nbsp;문&#8288;제** | 검은 창의 내용과 문제가 생긴 시점의 게임 화면 스크린샷을 제작자에게 보내 주세요. |
 
-## 안내 사항
+<br>
+
+<a name="notice"></a>
+<img src="docs/readme/sec-notice.svg" alt="안내 사항" width="420">
 
 - 개인이 만든 **비공식** 도구이며, 블리자드·넥슨과 관련이 없습니다.
 - 게임 파일을 읽거나 수정하지 않으며, 게임에 아무것도 주입하지 않습니다. 화면을 캡처해 글자와 그림만 인식합니다.
