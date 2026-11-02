@@ -234,20 +234,15 @@ def slides(gif, hold=3.8, move=0.7):
         dot_keys.append(f"{b:.3f}%{{transform:translateX({nxt * GAP}px)}}")
     images = "".join(f'<image href="data:image/png;base64,{d}" x="{i * w}" width="{w}" height="{h}"/>' for i, d in enumerate(frames))
     dots = "".join(f'<circle cx="{dx0 + i * GAP}" cy="{h + BAR / 2}" r="{DOT / 2 - 2}" fill="#3a404d"/>' for i in range(n))
-    arrow = lambda x, d: (f'<g transform="translate({x} {h / 2})"><circle r="30" fill="#0d0f13" fill-opacity=".72" stroke="#ffffff" stroke-opacity=".18" stroke-width="2"/>'
-                          f'<path d="{d}" fill="none" stroke="{ORG}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>')
     body = f"""
 <style>
 .track{{animation:slide {T}s infinite}} @keyframes slide{{{keys(w)}}}
 .cur{{animation:dot {T}s infinite}} @keyframes dot{{{"".join(dot_keys)}}}
-.nx{{animation:nudge {T / n}s infinite}} @keyframes nudge{{0%,70%,100%{{opacity:.75}}82%{{opacity:1;transform:translateX(6px)}}}}
-@media (prefers-reduced-motion: reduce){{.track,.cur,.nx{{animation:none}}}}
+@media (prefers-reduced-motion: reduce){{.track,.cur{{animation:none}}}}
 </style>
 <rect width="{W}" height="{H}" rx="18" fill="{BG}"/>
 <clipPath id="frame"><rect width="{w}" height="{h}" rx="18"/></clipPath>
 <g clip-path="url(#frame)"><g class="track">{images}<image href="data:image/png;base64,{frames[0]}" x="{n * w}" width="{w}" height="{h}"/></g></g>
-{arrow(48, "M7 -12L-5 0L7 12")}
-<g class="nx">{arrow(W - 48, "M-7 -12L5 0L-7 12")}</g>
 {dots}
 <g class="cur"><rect x="{dx0 - 13}" y="{h + BAR / 2 - 6}" width="26" height="12" rx="6" fill="{ORG}"/></g>
 """
