@@ -1,0 +1,68 @@
+# 공유 통계: 넥슨 공식 영웅 통계(경쟁전·빠른 대전 × 티어 × 맵)를 하루 두 번 받아 stats 가지에 올린다.
+# 앱은 통계가 오래되면 먼저 이 파일 두 개(data.js · data-qp.js)를 받는다 (몇 초).
+# 쓰는 사람마다 넥슨에 576쪽씩 요청하던 것을 여기서 한 번만. 실패하면 앱이 예전처럼 직접 받는다.
+# 받는 코드는 tools/stats/ (개발 저장소 scrape.py · nexon.py 사본 — 바꾸면 같이 바꾼다)
+name: 공유 통계
+
+on:
+  schedule:
+    - cron: "10 19 * * *"   # 매일 04:10 (한국 시각)
+    - cron: "10 7 * * *"    # 매일 16:10 (한국 시각)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stats
+  cancel-in-progress: false
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 지난 공유 통계 가져오기 (영웅 기술 이름 이어 쓰기 · 빈 칸 비교)
+        run: |
+          mkdir -p work
+          cp tools/stats/*.py work/
+          if git fetch --depth=1 origin stats; then
+            git show origin/stats:data.js > work/data.js
+            git show origin/stats:data-qp.js > work/data-qp.js
+          fi
+
+      - name: 넥슨 공식 통계 받기
+        working-directory: work
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scrape.py --delay 0.6
+
+      - name: stats 가지에 올리기
+        working-directory: work
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          for name in ("data.js", "data-qp.js"):
+              text = open(name, encoding="utf-8").read()
+              d = json.loads(text[text.index("{"): text.rindex("}") + 1])
+              filled = sum(1 for maps in d["stats"].values() for v in maps.values() if v)
+              assert filled >= 200, f"{name}: 채워진 칸이 {filled}개뿐"
+              print(name, d["updated"], filled, "칸")
+          PY
+          mkdir -p ../pub && cp data.js data-qp.js ../pub/
+          cd ../pub
+          git init -q -b stats
+          git add data.js data-qp.js
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "공유 통계 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" stats
