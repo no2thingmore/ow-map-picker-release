@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 맵 픽 도우미 아이콘: 주황 원(과녁) 안의 맵 핀. 직접 그린 그림 (게임 로고 아님) -->
+  <rect width="64" height="64" rx="14" fill="#11141a"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#ff9c2a" stroke-width="5"/>
+  <path d="M32 15c-6.6 0-12 5.2-12 11.7C20 35.5 32 48 32 48s12-12.5 12-21.3C44 20.2 38.6 15 32 15z" fill="#ff9c2a"/>
+  <circle cx="32" cy="27" r="4.6" fill="#11141a"/>
+</svg>

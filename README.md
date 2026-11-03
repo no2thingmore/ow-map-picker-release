@@ -13,7 +13,7 @@
 <img src="https://img.shields.io/badge/%EC%83%81%ED%83%9C-%EB%B2%A0%ED%83%80-1b1e25" alt="베타">
 </p>
 
-<p align="center"><a href="#install">설치</a> · <a href="#usage">사용 방법</a> · <a href="#screens">화면 구성</a> · <a href="#trouble">문제 해결</a> · <a href="#notice">안내 사항</a></p>
+<p align="center"><a href="https://no2thingmore.github.io/ow-map-picker-release/">소개 페이지</a> · <a href="#install">설치</a> · <a href="#usage">사용 방법</a> · <a href="#screens">화면 구성</a> · <a href="#trouble">문제 해결</a> · <a href="#notice">안내 사항</a></p>
 
 <img src="docs/readme/slides.svg" alt="판 정보가 들어올수록 추천이 바뀌는 모습 (5장면)" width="100%">
 
