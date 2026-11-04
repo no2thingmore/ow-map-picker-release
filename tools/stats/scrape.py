@@ -2,9 +2,11 @@
 
 사용: python scrape.py [--region korea] [--input pc] [--ranks diamond,master] [--delay 0.4] [--first grandmaster]
       python scrape.py --shared      공개 저장소의 공유 통계(GitHub가 하루 두 번 받아 둔 것)만 받기 (몇 초)
+패치 직후 새 통계의 판 수가 지금 통계보다 훨씬 적으면 지금 통계를 그대로 둔다 (HOLD_RATIO, data.js의 held)
 """
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -24,6 +26,13 @@ KST = timezone(timedelta(hours=9))
 SHARED_BASE = "https://raw.githubusercontent.com/no2thingmore/ow-map-picker-release/stats/"
 SHARED_MAX_AGE_H = 30   # 이보다 오래된 공유 통계는 안 씀 (GitHub 작업이 멈췄을 때는 직접 받게)
 DELAY_MAX = 5.0         # 막히면(실패하면) 요청 사이 대기를 이만큼까지 늘림
+# 이전 통계 유지 (2026-11-05 사용자 결정): 넥슨 통계는 패치마다 0부터 다시 쌓여서, 패치 직후 새 통계는 판 수가 아주 적다
+# (5시즌 중간 패치 다음 날 실측: 이전의 약 1/100, 마스터 칸의 53%가 승률 0%·100%). 그동안은 지금 통계를 그대로 쓴다.
+# 기준: 새 통계 판 수(추정)가 지금 통계의 1/6 미만. 시뮬레이션에서 실제 1/8일 때 추정이 약 1/6이고,
+#       판 수 1/8이면 추천 1~3순위가 평균 73% 겹침 (1/64면 48%)
+HOLD_RATIO = 1 / 6
+HOLD_MAX_DAYS = 7       # 그래도 이만큼 지나면 새 통계로 (밸런스가 바뀐 뒤라 이전 통계를 너무 오래 쓰지 않게)
+HOLD_TIERS = ("gold", "platinum", "emerald", "diamond")  # 판 수 비교에 쓰는 티어 (판이 많아 추정이 안정)
 
 
 THUMB = 96  # 화면에는 40~44px로 보이니 2배 크기면 충분 (원본 256px ≈ 170KB → 약 15KB)
@@ -168,8 +177,8 @@ def collect(rq, ranks, map_keys, args, heroes, label, on_rank=None):
     return stats, failed
 
 
-def read_data(path=OUT_PATH):
-    with open(path, encoding="utf-8") as f:
+def read_data(path=None):
+    with open(path or OUT_PATH, encoding="utf-8") as f:  # 기본값은 부를 때의 OUT_PATH (시험이 임시 폴더로 바꿀 수 있게)
         text = f.read()
     return json.loads(text[text.index("{"): text.rindex("}") + 1])
 
@@ -185,6 +194,120 @@ def _age_hours(updated):
 
 def _filled(stats):
     return sum(1 for maps in (stats or {}).values() for v in maps.values() if v)
+
+
+# ---- 판 수 추정: shrink.js의 fitNoise와 같은 계산 (selftest가 node로 두 쪽 값을 비교) ----
+# 넥슨 통계엔 경기 수가 없다. 맵 승률 − 평소 승률의 흩어짐 = 진짜 차이 + 노이즈(A × 4q(1-q) / 픽률)이고,
+# A ∝ 1 / 그 맵 경기 수. 맵마다 A를 최대우도로 맞춘 뒤 중간값을 쓴다 → 두 통계의 A 비율 = 판 수 비율
+_NU, _P_FLOOR, _MIN_HEROES = 4, 0.05, 10
+_LOG_LO, _LOG_HI, _TAU_LO, _TAU_HI = math.log(0.01), math.log(1e5), math.log(1e-3), math.log(400)
+
+
+def _g(q):
+    q = min(max(q / 100, 0.02), 0.98)
+    return 4 * q * (1 - q)
+
+
+def _tll(d, v):
+    return -0.5 * math.log(v) - (_NU + 1) / 2 * math.log1p(d * d / (_NU * v))
+
+
+def _nested(fine, coarse):
+    return max(fine - coarse, 0.25 * fine) + 0.01
+
+
+def _golden(f, lo, hi, it=50):
+    r = (math.sqrt(5) - 1) / 2
+    a, b = lo, hi
+    c, d = b - r * (b - a), a + r * (b - a)
+    fc, fd = f(c), f(d)
+    for _ in range(it):
+        if fc > fd:
+            b, d, fd = d, c, fc
+            c = b - r * (b - a)
+            fc = f(c)
+        else:
+            a, c, fc = c, d, fd
+            d = a + r * (b - a)
+            fd = f(d)
+    return (a + b) / 2
+
+
+def noise_level(stats, rank):
+    """그 티어의 맵 노이즈 A 중간값 (shrink.js noiseOf(rank).Amed와 같은 값, 클수록 판이 적음). 맵이 없으면 None."""
+    st = (stats or {}).get(rank) or {}
+    base = st.get("all") or {}
+    groups = {}
+    for m, e in st.items():
+        if m == "all":
+            continue
+        its = []
+        for h, x in e.items():
+            b = base.get(h)
+            if not b or x[0] <= 0 or b[0] <= 0:
+                continue
+            gq = _g(b[1])
+            its.append((x[1] - b[1], gq / max(x[0], _P_FLOOR), gq / max(b[0], _P_FLOOR)))
+        if len(its) >= _MIN_HEROES:
+            groups[m] = its
+    if not groups:
+        return None
+    A, tau2 = {k: 50.0 for k in groups}, 4.0
+
+    def ll(its, t2, a, ab):
+        return sum(_tll(d, t2 + _nested(a * gp, ab * gb)) for d, gp, gb in its)
+
+    def harm(vals):
+        return 1 / sum(1 / v for v in vals)
+
+    def near(x, lo, hi, w):
+        return (max(lo, x - w), min(hi, x + w)) if w else (lo, hi)
+    # 맵별 A와 tau2를 번갈아 맞춘다 (첫 라운드는 전체 범위, 그 뒤엔 이전 값 주변. 둘 다 1% 안쪽으로만 움직이면 멈춤)
+    for rnd in range(40):
+        w, it, prev_t = (1.5, 16, tau2) if rnd else (0, 40, tau2)
+        ab, moved = harm(A.values()), 0.0
+        for k, its in groups.items():
+            c = math.log(A[k])
+            A[k] = math.exp(_golden(lambda la: ll(its, tau2, math.exp(la), ab), *near(c, _LOG_LO, _LOG_HI, w), it))
+            moved = max(moved, abs(math.log(A[k]) - c))
+        ab = harm(A.values())
+        tau2 = math.exp(_golden(lambda lt: sum(ll(its, math.exp(lt), A[k], ab) for k, its in groups.items()),
+                                *near(math.log(tau2), _TAU_LO, _TAU_HI, w), it))
+        if rnd and moved < 0.01 and abs(math.log(tau2 / prev_t)) < 0.01:
+            break
+    vals = sorted(A.values())
+    return vals[len(vals) >> 1]
+
+
+def games_ratio(new_stats, old_stats, tiers=HOLD_TIERS):
+    """새 통계의 판 수 / 지금 통계의 판 수 (추정, 티어별 비율의 중간값). 못 재면 None."""
+    rs = []
+    for t in tiers:
+        a_old, a_new = noise_level(old_stats, t), noise_level(new_stats, t)
+        if a_old and a_new:
+            rs.append(a_old / a_new)
+    return sorted(rs)[len(rs) >> 1] if rs else None
+
+
+def should_hold(new_stats, old):
+    """새 통계 대신 지금 통계(old, data.js 내용)를 계속 쓸지 → (유지?, 판 수 비율 또는 None).
+    유지 = 새 통계 판 수가 지금 통계의 HOLD_RATIO 미만 + 지금 통계가 HOLD_MAX_DAYS 안의 것(유지 중이면 유지 시작부터)."""
+    if not old or not old.get("stats"):
+        return False, None
+    held = old.get("held") or {}
+    if _age_hours(held.get("since") or old.get("updated")) > HOLD_MAX_DAYS * 24:
+        return False, None
+    ratio = games_ratio(new_stats, old["stats"])
+    return (ratio is not None and ratio < HOLD_RATIO), ratio
+
+
+def held_copy(old, ratio, when):
+    """지금 통계를 그대로 두고 확인 시각(updated)과 '이전 통계 유지' 표시(held)만 바꾼 것.
+    held = {from: 이 통계를 실제로 받은 시각, since: 유지를 시작한 시각, ratio: 새 통계 판 수 / 이 통계 판 수(추정)}.
+    updated를 지금으로 두는 건, 공유 통계를 받는 예전 버전 앱도 '새 파일'로 보고 이 통계를 그대로 받게 하려고."""
+    h = old.get("held") or {}
+    return {**old, "updated": when,
+            "held": {"from": h.get("from") or old.get("updated"), "since": h.get("since") or when, "ratio": round(ratio, 4)}}
 
 
 def fetch_shared(base=SHARED_BASE):
@@ -203,8 +326,8 @@ def fetch_shared(base=SHARED_BASE):
         except Exception as e:
             print(f"공유 통계 {name} 못 받음: {e}")
             return 1
-    data, qp = got["data.js"], got["data-qp.js"]
-    for name, d, local in (("data.js", data, OUT_PATH), ("data-qp.js", qp, QP_PATH)):
+    for name, local in (("data.js", OUT_PATH), ("data-qp.js", QP_PATH)):
+        d = got[name]
         age = _age_hours(d.get("updated"))
         if age > SHARED_MAX_AGE_H:
             print(f"공유 통계 {name}가 {age:.0f}시간 전 것이라 직접 받음")
@@ -216,13 +339,23 @@ def fetch_shared(base=SHARED_BASE):
         if old and _filled(d.get("stats")) < _filled(old.get("stats")) * 0.9:
             print(f"공유 통계 {name}에 빈 칸이 많아 직접 받음")
             return 1
+        # 공유 통계가 패치 직후의 적은 통계이고(GitHub 작업이 아직 유지로 바꾸기 전) 지금 파일이 그 전 것이면 지금 파일을 유지
+        # (공유 쪽이 이미 '유지' 표시를 달고 온 것은 그대로 받는다 — 거기서 같은 판단을 했음)
+        if old and not d.get("held"):
+            hold, ratio = should_hold(d.get("stats"), old)
+            if hold:
+                got[name] = held_copy(old, ratio, datetime.now(KST).strftime("%Y-%m-%d %H:%M"))
+                print(f"공유 통계 {name}: 새 통계 판 수가 지금 통계의 약 1/{1 / ratio:.0f} (패치 직후로 보임) → {got[name]['held']['from']} 통계 유지")
+    data, qp = got["data.js"], got["data-qp.js"]
     if not data.get("heroes") or not data.get("maps"):
         print("공유 통계에 영웅·맵 목록이 없어 직접 받음")
         return 1
     cache_images(data["heroes"])  # 새 영웅 사진만 넥슨에서 한 번
     write_qp(qp)
     write_data(data)
-    print(f"공유 통계 저장 완료 ({data.get('updated')}에 받은 것, {len(data['heroes'])}명)")
+    held = (data.get("held") or {}).get("from")
+    print(f"공유 통계 저장 완료 ({data.get('updated')}에 받은 것, {len(data['heroes'])}명"
+          + (f", 패치 직후라 {held} 통계 유지 중)" if held else ")"))
     return 0
 
 
@@ -296,16 +429,14 @@ def main(argv=None):
         # '전체'와 --first 티어를 다 받은 순간 나머지 티어는 예전 값으로 채워 한 번 저장 → 화면이 바로 새 통계
         if len(stats) != n_first or n_first == len(ranks) or not old.get("stats") or len(failed) > n_first * len(map_keys) * 0.1:
             return
+        # 이전 통계를 유지하는 중이거나 '전체' 티어부터 판 수가 확 줄었으면(패치 직후) 섞어 저장하지 않고 끝에서 정한다
+        quick = games_ratio(stats, old["stats"], ("all",))
+        if old.get("held") or (quick is not None and quick < HOLD_RATIO):
+            return
         write_data(build({**old["stats"], **stats}))
         print(f"\n먼저 받은 티어({', '.join(stats)}) 저장. 나머지 티어는 계속 받는 중")
 
-    # 경쟁전 먼저 (밴이 있고 더 많이 씀)
-    if args.queue in ("both", "comp"):
-        stats, failed = collect("2", order, map_keys, args, heroes, "경쟁전", on_rank=early)
-        # 네트워크 문제 등으로 많이 실패했으면 기존의 멀쩡한 데이터를 덮어쓰지 않는다
-        if len(failed) > total * 0.1 and os.path.exists(OUT_PATH):
-            print("실패가 많아 기존 data.js 유지. 잠시 후 다시 시도")
-            return 1
+    def save_comp(stats):
         data = build(stats)
         cache_images(data["heroes"])
         if _age_hours(data.get("skillsAt")) > SKILLS_EVERY_H:
@@ -317,12 +448,35 @@ def main(argv=None):
                 fetch_skills(fresh)
         write_data(data)
         print(f"저장 완료: {OUT_PATH} ({len(heroes)}명, {total}개 조합)")
+
+    # 경쟁전 먼저 (밴이 있고 더 많이 씀)
+    if args.queue in ("both", "comp"):
+        stats, failed = collect("2", order, map_keys, args, heroes, "경쟁전", on_rank=early)
+        # 네트워크 문제 등으로 많이 실패했으면 기존의 멀쩡한 데이터를 덮어쓰지 않는다
+        if len(failed) > total * 0.1 and os.path.exists(OUT_PATH):
+            print("실패가 많아 기존 data.js 유지. 잠시 후 다시 시도")
+            return 1
+        hold, ratio = should_hold(stats, old)
+        if hold:
+            kept = held_copy(old, ratio, now())
+            write_data(kept)
+            print(f"경쟁전: 새 통계 판 수가 지금 통계의 약 1/{1 / ratio:.0f} (패치 직후로 보임) → {kept['held']['from']} 통계 유지")
+        else:
+            if old.get("held"):
+                print("경쟁전: 새 통계가 충분히 쌓여 (또는 유지 기간이 지나) 새 통계로 바꿈")
+            save_comp(stats)
     # 빠른 대전 - 역할 고정 (rq=0): 밴이 없어서 밴률은 0. 실패가 많으면 기존 파일 유지
     if args.queue in ("both", "quick"):
         qstats, qfailed = collect("0", order, map_keys, args, heroes, "빠른 대전")
+        old_qp = read_data(QP_PATH) if os.path.exists(QP_PATH) else {}
+        qhold, qratio = should_hold(qstats, old_qp)
         if len(qfailed) > total * 0.1 and os.path.exists(QP_PATH):
             print("빠른 대전: 실패가 많아 기존 data-qp.js 유지")
             status = 1
+        elif qhold:
+            kept = held_copy(old_qp, qratio, now())
+            write_qp(kept)
+            print(f"빠른 대전: 새 통계 판 수가 지금 통계의 약 1/{1 / qratio:.0f} → {kept['held']['from']} 통계 유지")
         else:
             write_qp(dict(updated=now(), source="https://overwatch.nexon.com/hero/rate",
                           region=args.region, input=args.input, queue="빠른 대전 - 역할 고정", stats=ordered(qstats)))
