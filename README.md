@@ -107,7 +107,7 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 새 버전이 나오면 화면 위에 알림이 떠요. **다운로드하기**를 누르면 알아서 바꾸고 다시 켜요. 전적, 배운 얼굴, 설정은 그대로예요.
 
 - **자동 업데이트**를 고르면 오버워치를 2분 넘게 안 할 때 받아요. 게임 중에는 받지 않아요.
-- 버전마다 바뀐 점은 [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html)에 있어요. 사진으로 보기: [v0.8.3](docs/releases/v0.8.3.md), [v0.8.2](docs/releases/v0.8.2.md), [v0.8.1](docs/releases/v0.8.1.md)
+- 버전마다 바뀐 점은 [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html)에 있어요. 사진으로 보기: [v0.8.4](docs/releases/v0.8.4.md), [v0.8.3](docs/releases/v0.8.3.md), [v0.8.2](docs/releases/v0.8.2.md), [v0.8.1](docs/releases/v0.8.1.md)
 
 ## 설치
 
