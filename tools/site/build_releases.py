@@ -37,9 +37,10 @@ def title_of(v):
     p = os.path.join(DOCS, "releases", f"v{v}.md")
     if not os.path.exists(p):
         return None, False
-    first = open(p, encoding="utf-8").readline()
-    m = re.search(r"\(([^)]+)\)\s*$", first)
-    return (m.group(1) if m else None), True
+    first = open(p, encoding="utf-8").readline().strip()
+    # 새 형식 '# v0.8.3 통계 받기가 7분에서 1초로' → 버전 뒤 글자, 예전 형식 '# v0.8.2 · 사진으로 … (제목)' → 괄호 안
+    m = re.match(r"#\s*v[\d.]+\s+(?!·)(.+)$", first) or re.search(r"\(([^)]+)\)\s*$", first)
+    return (m.group(1).strip() if m else None), True
 
 
 def items_html(items):
@@ -70,7 +71,7 @@ def media_html(media, src_root):
 def links_html(v, has_md):
     a = [f"<a class=\"btn ghost sm\" href=\"{REPO}/releases/tag/v{v}\">이 버전 받기</a>"] if has_release(v) else []
     if has_md:
-        a.append(f"<a class=\"btn ghost sm\" href=\"{REPO}/blob/main/docs/releases/v{v}.md\">사진으로 자세히 (개선 전 / 후)</a>")
+        a.append(f"<a class=\"btn ghost sm\" href=\"{REPO}/blob/main/docs/releases/v{v}.md\">사진으로 자세히</a>")
     return f"<div class=\"rel-links\">{''.join(a)}</div>" if a else ""
 
 
@@ -158,7 +159,7 @@ TEMPLATE = """<!doctype html>
 <main id="main" class="doc">
   <div class="wrap">
     <h1 class="disp">업데이트 내역</h1>
-    <p class="lead">버전마다 바뀐 점이에요. 프로그램은 새 버전이 나오면 알려 주고, 자동 업데이트를 켜 두면 게임을 쉬는 동안 알아서 받아요. 전적과 설정은 그대로예요.</p>
+    <p class="lead">버전마다 바뀐 점이에요. 새 버전이 나오면 프로그램이 알려 주고, 업데이트해도 전적과 설정은 그대로예요.</p>
     <nav aria-label="버전 목차"><ul class="toc">{toc}</ul></nav>
     <div class="rel-list">{body}</div>
     <section id="older" class="older" aria-labelledby="older-h">
@@ -179,7 +180,7 @@ TEMPLATE = """<!doctype html>
 <footer class="foot">
   <div class="wrap">
     <p>개인이 만든 <b>비공식</b> 팬 제작 도구예요. Blizzard Entertainment · 넥슨과 관련이 없어요. Overwatch는 Blizzard Entertainment, Inc.의 상표예요.</p>
-    <p>사진의 판은 시험용이에요. 이 페이지는 프로그램 안 '업데이트 내역'과 같은 내용이에요.</p>
+    <p>프로그램 안 '업데이트 내역'과 같은 내용이에요.</p>
     <p><a href="./">처음으로</a> · <a href="guide.html">사용법</a> · <a href="{repo}/releases">GitHub 전체 버전</a></p>
   </div>
 </footer>
