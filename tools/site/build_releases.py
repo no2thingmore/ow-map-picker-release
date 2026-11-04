@@ -67,20 +67,37 @@ def items_html(items):
             + f"<details class=\"more\"><summary>바뀐 점 {len(items) - SHOW}개 더 보기</summary>{ul(items[SHOW:])}</details>")
 
 
-def media_html(media, src_root):
-    if not media:
-        return ""
+def copy_img(src_root, rel):
+    """개발 저장소의 사진을 docs/site/img/changes/로 복사하고 (사이트 주소, 폭, 높이)를 돌려준다"""
     out_dir = os.path.join(DOCS, "site", "img", "changes")
     os.makedirs(out_dir, exist_ok=True)
+    src, name = os.path.join(src_root, rel), os.path.basename(rel)
+    shutil.copyfile(src, os.path.join(out_dir, name))
+    with Image.open(src) as im:
+        w, h = im.size
+    return f"site/img/changes/{esc(name)}", w, h
+
+
+def img_tag(src_root, rel, alt):
+    url, w, h = copy_img(src_root, rel)
+    return f"<img src=\"{url}\" width=\"{w}\" height=\"{h}\" alt=\"{esc(alt)}\" loading=\"lazy\">"
+
+
+def media_html(media, src_root, version, prev):
+    """사진: {before, after} 쌍은 왼쪽 '개선 전 v이전'(회색) · 오른쪽 '개선 후 v이번'(주황) 나란히 (프로그램 업데이트 내역 화면과 같은 모양, 2026-11-05), {src} 한 장은 폭 전체"""
+    if not media:
+        return ""
     figs = []
     for m in media:
-        src = os.path.join(src_root, m["src"])
-        name = os.path.basename(m["src"])
-        shutil.copyfile(src, os.path.join(out_dir, name))
-        with Image.open(src) as im:
-            w, h = im.size
-        figs.append(f"<figure class=\"pic\"><img src=\"site/img/changes/{esc(name)}\" width=\"{w}\" height=\"{h}\" alt=\"{esc(m.get('alt', ''))}\" loading=\"lazy\">"
-                    + (f"<figcaption>{esc(m['caption'])}</figcaption>" if m.get("caption") else "") + "</figure>")
+        cap = f"<figcaption>{esc(m['caption'])}</figcaption>" if m.get("caption") else ""
+        if m.get("src"):
+            figs.append(f"<figure class=\"pic\">{img_tag(src_root, m['src'], m.get('alt', ''))}{cap}</figure>")
+            continue
+        frm = m.get("from") or prev
+        figs.append("<figure class=\"pic cmp\"><div class=\"cmp-grid\">"
+                    f"<div><div class=\"cmp-lab before\">개선 전{(' <b>v' + esc(frm) + '</b>') if frm else ''}</div>{img_tag(src_root, m['before'], (m.get('alt', '') + ' (개선 전)').strip())}</div>"
+                    f"<div><div class=\"cmp-lab after\">개선 후 <b>v{esc(version)}</b></div>{img_tag(src_root, m['after'], (m.get('alt', '') + ' (개선 후)').strip())}</div>"
+                    f"</div>{cap}</figure>")
     return f"<div class=\"rel-media\">{''.join(figs)}</div>"
 
 
@@ -91,7 +108,7 @@ def links_html(v, has_md):
     return f"<div class=\"rel-links\">{''.join(a)}</div>" if a else ""
 
 
-def article(e, src_root, latest=False):
+def article(e, src_root, latest=False, prev=None):
     v, date = e["version"], e.get("date", "")
     title, has_md = title_of(v)
     title = e.get("summary") or title
@@ -100,7 +117,7 @@ def article(e, src_root, latest=False):
             + f"<time datetime=\"{esc(date)}\">{esc(date.replace('-', '. '))}.</time>"
             + (f"<p class=\"rel-title\">{esc(title)}</p>" if title else "") + "</header>")
     return (f"<article class=\"rel{' latest' if latest else ''}\" aria-labelledby=\"v{v}\">{head}"
-            f"{items_html(e['items'])}{media_html(e.get('media'), src_root)}{links_html(v, has_md)}</article>")
+            f"{items_html(e['items'])}{media_html(e.get('media'), src_root, v, prev)}{links_html(v, has_md)}</article>")
 
 
 def old_row(e):
@@ -130,7 +147,7 @@ def main(changes_path):
     old = [e for e in data if ver_tuple(e["version"]) < OPEN_FROM]
     top = new[0]
     toc = "".join(f"<li><a href=\"#v{e['version']}\">v{esc(e['version'])}</a></li>" for e in new) + f"<li><a href=\"#older\">이전 버전 {len(old)}개</a></li>"
-    body = "".join(article(e, src_root, latest=(e is top)) for e in new)
+    body = "".join(article(e, src_root, latest=(e is top), prev=data[i + 1]["version"] if i + 1 < len(data) else None) for i, e in enumerate(new))
     page = TEMPLATE.format(latest=esc(top["version"]), date=esc(top.get("date", "")), toc=toc, body=body,
                            older="".join(old_row(e) for e in old), n_old=len(old), first_old=esc(old[0]["version"]) if old else "",
                            last_old=esc(old[-1]["version"]) if old else "", site=SITE, repo=REPO)
