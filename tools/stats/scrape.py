@@ -207,17 +207,17 @@ def fetch_shared(base=SHARED_BASE):
     for name, d, local in (("data.js", data, OUT_PATH), ("data-qp.js", qp, QP_PATH)):
         age = _age_hours(d.get("updated"))
         if age > SHARED_MAX_AGE_H:
-            print(f"공유 통계 {name}가 {age:.0f}시간 전 것이라 직접 받습니다.")
+            print(f"공유 통계 {name}가 {age:.0f}시간 전 것이라 직접 받음")
             return 1
         old = read_data(local) if os.path.exists(local) else {}
         if old and _age_hours(old.get("updated")) <= age + 0.01:  # 같은 시각에 받은 것도 새것이 아님 (두 번 재는 사이 시간 차 빼고)
-            print(f"공유 통계 {name}가 지금 파일보다 새것이 아니라 직접 받습니다.")
+            print(f"공유 통계 {name}가 지금 파일보다 새것이 아니라 직접 받음")
             return 1
         if old and _filled(d.get("stats")) < _filled(old.get("stats")) * 0.9:
-            print(f"공유 통계 {name}에 빈 칸이 많아 직접 받습니다.")
+            print(f"공유 통계 {name}에 빈 칸이 많아 직접 받음")
             return 1
     if not data.get("heroes") or not data.get("maps"):
-        print("공유 통계에 영웅·맵 목록이 없어 직접 받습니다.")
+        print("공유 통계에 영웅·맵 목록이 없어 직접 받음")
         return 1
     cache_images(data["heroes"])  # 새 영웅 사진만 넥슨에서 한 번
     write_qp(qp)
@@ -297,14 +297,14 @@ def main(argv=None):
         if len(stats) != n_first or n_first == len(ranks) or not old.get("stats") or len(failed) > n_first * len(map_keys) * 0.1:
             return
         write_data(build({**old["stats"], **stats}))
-        print(f"\n먼저 받은 티어({', '.join(stats)})를 저장했어요. 나머지 티어는 계속 받는 중")
+        print(f"\n먼저 받은 티어({', '.join(stats)}) 저장. 나머지 티어는 계속 받는 중")
 
     # 경쟁전 먼저 (밴이 있고 더 많이 씀)
     if args.queue in ("both", "comp"):
         stats, failed = collect("2", order, map_keys, args, heroes, "경쟁전", on_rank=early)
         # 네트워크 문제 등으로 많이 실패했으면 기존의 멀쩡한 데이터를 덮어쓰지 않는다
         if len(failed) > total * 0.1 and os.path.exists(OUT_PATH):
-            print("실패가 많아 기존 data.js를 그대로 둡니다. 잠시 후 다시 시도하세요.")
+            print("실패가 많아 기존 data.js 유지. 잠시 후 다시 시도")
             return 1
         data = build(stats)
         cache_images(data["heroes"])
@@ -321,7 +321,7 @@ def main(argv=None):
     if args.queue in ("both", "quick"):
         qstats, qfailed = collect("0", order, map_keys, args, heroes, "빠른 대전")
         if len(qfailed) > total * 0.1 and os.path.exists(QP_PATH):
-            print("빠른 대전: 실패가 많아 기존 data-qp.js를 그대로 둡니다.")
+            print("빠른 대전: 실패가 많아 기존 data-qp.js 유지")
             status = 1
         else:
             write_qp(dict(updated=now(), source="https://overwatch.nexon.com/hero/rate",
