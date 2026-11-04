@@ -216,6 +216,11 @@ code { font-size: 14px; background: var(--panel-2); padding: 1px 6px; color: var
 .rel-title { flex-basis: 100%; margin: 4px 0 0; color: var(--accent); font-weight: 700; font-size: 18px; }
 .doc .rel-items { margin: 0; padding-left: 20px; }
 .doc .rel-items li { margin: 7px 0; max-width: 860px; }
+/* 바뀐 점 앞 [추가]/[개선]/[고침] 표시: 왼쪽 칸에 세우고 긴 항목은 오른쪽 칸 안에서 줄바꿈 (프로그램 '업데이트 내역'과 같은 색) */
+.doc .rel-items.tg { padding-left: 0; list-style: none; }
+.doc .rel-items.tg li { display: grid; grid-template-columns: 3.2em minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.it-tag { font-size: 13px; font-weight: 700; line-height: 1.6; text-align: center; border: 1px solid color-mix(in srgb, currentColor 45%, transparent); }
+.it-tag.add { color: var(--good); } .it-tag.imp { color: var(--rec); } .it-tag.fix { color: #ffd166; }
 .rel-media { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 20px 0 0; align-items: start; }
 .rel-media figcaption { font-size: 14px; color: var(--muted); padding: 8px 12px 10px; border-top: 1px solid var(--line); }
 .rel-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
