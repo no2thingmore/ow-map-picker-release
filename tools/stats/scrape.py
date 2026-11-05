@@ -301,13 +301,29 @@ def should_hold(new_stats, old):
     return (ratio is not None and ratio < HOLD_RATIO), ratio
 
 
-def held_copy(old, ratio, when):
-    """지금 통계를 그대로 두고 확인 시각(updated)과 '이전 통계 유지' 표시(held)만 바꾼 것.
-    held = {from: 이 통계를 실제로 받은 시각, since: 유지를 시작한 시각, ratio: 새 통계 판 수 / 이 통계 판 수(추정)}.
+def fill_empty_maps(old_stats, new_stats, filled=()):
+    """이전 통계에 통째로('전체' 티어까지) 비어 있는 맵만 새 통계로 채운 것 → (통계, 채운 맵 목록).
+    예: 2026-11 패치 전 0판이던 할리우드. 판이 적어도 추천 계산(shrink.js)이 그 맵 효과를 작게 줄여서 쓴다.
+    이미 채운 맵(filled)은 더 쌓인 새 통계로 바꾸고, 새 통계에서 빈 칸은 지금 값 그대로 (받기 실패와 구분이 안 되니까)."""
+    old_all = (old_stats or {}).get("all") or {}
+    new_all = (new_stats or {}).get("all") or {}
+    maps = [m for m, e in old_all.items() if new_all.get(m) and (m in filled or not e)]
+    stats = old_stats
+    if maps:
+        stats = {t: {**e, **{m: (new_stats.get(t) or {}).get(m) or e.get(m, {}) for m in maps}} for t, e in old_stats.items()}
+    return stats, sorted({*filled, *maps})
+
+
+def held_copy(old, ratio, when, new_stats=None):
+    """지금 통계를 두고 확인 시각(updated)과 '이전 통계 유지' 표시(held)를 바꾼 것. 통째로 빈 맵만 새 통계로 채운다(fill_empty_maps).
+    held = {from: 이 통계를 실제로 받은 시각, since: 유지를 시작한 시각, ratio: 새 통계 판 수 / 이 통계 판 수(추정), filled: 새 통계로 채운 맵(있을 때만)}.
     updated를 지금으로 두는 건, 공유 통계를 받는 예전 버전 앱도 '새 파일'로 보고 이 통계를 그대로 받게 하려고."""
     h = old.get("held") or {}
-    return {**old, "updated": when,
-            "held": {"from": h.get("from") or old.get("updated"), "since": h.get("since") or when, "ratio": round(ratio, 4)}}
+    stats, filled = fill_empty_maps(old.get("stats"), new_stats, h.get("filled") or ())
+    held = {"from": h.get("from") or old.get("updated"), "since": h.get("since") or when, "ratio": round(ratio, 4)}
+    if filled:
+        held["filled"] = filled
+    return {**old, "updated": when, "stats": stats, "held": held}
 
 
 def fetch_shared(base=SHARED_BASE):
@@ -344,7 +360,7 @@ def fetch_shared(base=SHARED_BASE):
         if old and not d.get("held"):
             hold, ratio = should_hold(d.get("stats"), old)
             if hold:
-                got[name] = held_copy(old, ratio, datetime.now(KST).strftime("%Y-%m-%d %H:%M"))
+                got[name] = held_copy(old, ratio, datetime.now(KST).strftime("%Y-%m-%d %H:%M"), d.get("stats"))
                 print(f"공유 통계 {name}: 새 통계 판 수가 지금 통계의 약 1/{1 / ratio:.0f} (패치 직후로 보임) → {got[name]['held']['from']} 통계 유지")
     data, qp = got["data.js"], got["data-qp.js"]
     if not data.get("heroes") or not data.get("maps"):
@@ -458,7 +474,7 @@ def main(argv=None):
             return 1
         hold, ratio = should_hold(stats, old)
         if hold:
-            kept = held_copy(old, ratio, now())
+            kept = held_copy(old, ratio, now(), stats)
             write_data(kept)
             print(f"경쟁전: 새 통계 판 수가 지금 통계의 약 1/{1 / ratio:.0f} (패치 직후로 보임) → {kept['held']['from']} 통계 유지")
         else:
@@ -474,7 +490,7 @@ def main(argv=None):
             print("빠른 대전: 실패가 많아 기존 data-qp.js 유지")
             status = 1
         elif qhold:
-            kept = held_copy(old_qp, qratio, now())
+            kept = held_copy(old_qp, qratio, now(), qstats)
             write_qp(kept)
             print(f"빠른 대전: 새 통계 판 수가 지금 통계의 약 1/{1 / qratio:.0f} → {kept['held']['from']} 통계 유지")
         else:
