@@ -1,7 +1,7 @@
 """넥슨 공식 통계에서 경쟁전 기준 [티어 × 맵] 전체 조합을 받아 data.js로 저장.
 
 사용: python scrape.py [--region korea] [--input pc] [--ranks diamond,master] [--delay 0.4] [--first grandmaster]
-      python scrape.py --shared      공개 저장소의 공유 통계(GitHub가 하루 두 번 받아 둔 것)만 받기 (몇 초)
+      python scrape.py --shared      공개 저장소의 공유 통계(GitHub가 하루 한 번 받아 둔 것)만 받기 (몇 초)
 패치 직후 새 통계의 판 수가 지금 통계보다 훨씬 적으면 지금 통계를 그대로 둔다 (HOLD_RATIO, data.js의 held)
 """
 import argparse
@@ -21,10 +21,10 @@ OUT_PATH = os.path.join(HERE, "data.js")
 QP_PATH = os.path.join(os.path.dirname(OUT_PATH), "data-qp.js")  # 빠른 대전 통계
 IMG_DIR = os.path.join(HERE, "img")
 KST = timezone(timedelta(hours=9))
-# 공유 통계: 공개 저장소 stats 가지에 GitHub가 하루 두 번 넥슨에서 받아 올려 둔 data.js · data-qp.js
+# 공유 통계: 공개 저장소 stats 가지에 GitHub가 하루 한 번 넥슨에서 받아 올려 둔 data.js · data-qp.js
 # (사람마다 넥슨에 576쪽씩 요청하던 것을 한 번으로. 받는 쪽은 파일 두 개 = 몇 초)
 SHARED_BASE = "https://raw.githubusercontent.com/no2thingmore/ow-map-picker-release/stats/"
-SHARED_MAX_AGE_H = 30   # 이보다 오래된 공유 통계는 안 씀 (GitHub 작업이 멈췄을 때는 직접 받게)
+SHARED_MAX_AGE_H = 54   # 이보다 오래된 공유 통계는 안 씀 (GitHub 작업이 멈췄을 때는 직접 받게). 하루 1번이라 한 번 놓친 것(48시간 + GitHub 지연)까지는 공유 통계로
 DELAY_MAX = 5.0         # 막히면(실패하면) 요청 사이 대기를 이만큼까지 늘림
 # 이전 통계 유지 (2026-11-05 사용자 결정): 넥슨 통계는 패치마다 0부터 다시 쌓여서, 패치 직후 새 통계는 판 수가 아주 적다
 # (5시즌 중간 패치 다음 날 실측: 이전의 약 1/100, 마스터 칸의 53%가 승률 0%·100%). 그동안은 지금 통계를 그대로 쓴다.
@@ -327,10 +327,10 @@ def held_copy(old, ratio, when, new_stats=None):
 
 
 def fetch_shared(base=SHARED_BASE):
-    """공유 통계(data.js · data-qp.js)를 받아 쓸 만하면 저장 → 0, 못 쓰면 1 (그땐 넥슨에서 직접 받는다).
+    """공유 통계(data.js · data-qp.js)를 받아 쓸 만하면 저장 → 0, 아직 지금 파일과 그대로면 그냥 → 0, 못 쓰면 1 (그땐 넥슨에서 직접 받는다).
     쓸 만함 = 둘 다 SHARED_MAX_AGE_H 안에 받은 것 + 지금 파일보다 새것 + 채워진 칸이 지금 파일의 90% 이상 (반쯤 실패한 파일을 막으려고)."""
     import urllib.request
-    got = {}
+    got, not_newer = {}, []
     for name, var in (("data.js", "OW_DATA"), ("data-qp.js", "OW_DATA_QP")):
         try:
             req = urllib.request.Request(base + name, headers={"User-Agent": nexon.USER_AGENT, "Cache-Control": "no-cache"})
@@ -350,8 +350,8 @@ def fetch_shared(base=SHARED_BASE):
             return 1
         old = read_data(local) if os.path.exists(local) else {}
         if old and _age_hours(old.get("updated")) <= age + 0.01:  # 같은 시각에 받은 것도 새것이 아님 (두 번 재는 사이 시간 차 빼고)
-            print(f"공유 통계 {name}가 지금 파일보다 새것이 아니라 직접 받음")
-            return 1
+            not_newer.append(name)
+            continue
         if old and _filled(d.get("stats")) < _filled(old.get("stats")) * 0.9:
             print(f"공유 통계 {name}에 빈 칸이 많아 직접 받음")
             return 1
@@ -362,6 +362,13 @@ def fetch_shared(base=SHARED_BASE):
             if hold:
                 got[name] = held_copy(old, ratio, datetime.now(KST).strftime("%Y-%m-%d %H:%M"), d.get("stats"))
                 print(f"공유 통계 {name}: 새 통계 판 수가 지금 통계의 약 1/{1 / ratio:.0f} (패치 직후로 보임) → {got[name]['held']['from']} 통계 유지")
+    if len(not_newer) == 2:
+        # 공유 통계는 하루 1번 올라오고 앱은 20시간마다 확인한다. 아직 그대로면 넥슨에 직접 받으러 가지 않고 다음 확인까지 둔다
+        print("공유 통계가 아직 그대로라 지금 통계를 씀")
+        return 0
+    if not_newer:
+        print(f"공유 통계 {not_newer[0]}가 지금 파일보다 새것이 아니라 직접 받음")
+        return 1
     data, qp = got["data.js"], got["data-qp.js"]
     if not data.get("heroes") or not data.get("maps"):
         print("공유 통계에 영웅·맵 목록이 없어 직접 받음")

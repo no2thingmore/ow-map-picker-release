@@ -36,6 +36,7 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 
 - 내 포지션 영웅 순위. 이 맵과 티어의 승률에 상성, 시너지, 조합을 더한 점수. 적을 알면 적 조합 대응 표(합계 = 맵 + 상성)
 - 안 하는 영웅을 저장하면 추천에서 빠짐. 다시 켜도 유지, 다시 누르면 돌아옴
+- 추천 목록에서 영웅을 누르면 지금 모드와 티어의 영웅 통계로 이동
 - 맵, 밴, 양 팀 영웅이 저절로 들어옴. 영웅 선택 화면과 점수판에서 대기실 금지까지 밴 5명, 내 영웅, 등급 범위를 읽음. 처음 보는 얼굴은 한 번 알려 주면 기억
 - 게임 위에 1~3순위와 조심할 적을 작게 표시(오버레이). Ctrl+Shift+O로 켜고 끄기
 - 폰으로 추천 화면 보기. PC와 같은 Wi-Fi면 됨
@@ -59,7 +60,7 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 
 폰은 맵 옆에 내 영웅, 그 아래 1~3순위, 적 조합 대응, 추천 목록 순서. 좁은 창은 한 줄씩 쌓임: 맵, 내 영웅, 1~3순위, 이번 판, 적 조합 대응, 추천 목록 순서.
 
-추천 점수는 통계로 계산한 추정값. 점수를 누르면 근거가 펼쳐지고, 목록 머리줄 '추천 점수' 옆 **?** 단추에 계산법. '표본 적음'이 붙은 값은 경기 수가 적은 값.
+추천 점수는 통계로 계산한 추정값. 영웅 줄을 누르면 지금 모드·티어의 영웅 통계로 이동, 목록 머리줄 '추천 점수' 옆 **?** 단추에 계산법. '표본 적음'이 붙은 값은 경기 수가 적은 값.
 
 패치 직후 새 통계가 너무 적으면 패치 전 통계를 유지(최대 7일), 머리글에 표시. 패치 전 통계가 없는 맵은 그 맵만 패치 후 판으로 계산하고 맵 이름 아래에 안내.
 
@@ -113,10 +114,10 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 
 **다운로드하기** 한 번이면 끝. 새 버전이 나오면 화면 위에 알림, 누르면 알아서 바꾸고 다시 켬. 전적, 배운 얼굴, 설정은 그대로.
 
-<img src="docs/update-banner.png" alt="새 버전 알림: 새 버전 v0.8.9, 업데이트 방식 직접 받기와 자동 업데이트" width="700">
+<img src="docs/update-banner.png" alt="새 버전 알림: 새 버전 v0.9.0, 업데이트 방식 직접 받기와 자동 업데이트" width="700">
 
 - **자동 업데이트**를 고르면 오버워치를 2분 넘게 안 할 때 받음. 게임 중에는 받지 않음
-- 버전마다 바뀐 점: [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html). 사진으로 보기: [v0.8.9](docs/releases/v0.8.9.md), [v0.8.8](docs/releases/v0.8.8.md), [v0.8.7](docs/releases/v0.8.7.md), [v0.8.6](docs/releases/v0.8.6.md), [v0.8.5](docs/releases/v0.8.5.md), [v0.8.4](docs/releases/v0.8.4.md), [v0.8.3](docs/releases/v0.8.3.md), [v0.8.2](docs/releases/v0.8.2.md)
+- 버전마다 바뀐 점: [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html). 사진으로 보기: [v0.9.0](docs/releases/v0.9.0.md), [v0.8.9](docs/releases/v0.8.9.md), [v0.8.8](docs/releases/v0.8.8.md), [v0.8.7](docs/releases/v0.8.7.md), [v0.8.6](docs/releases/v0.8.6.md), [v0.8.5](docs/releases/v0.8.5.md), [v0.8.4](docs/releases/v0.8.4.md), [v0.8.3](docs/releases/v0.8.3.md), [v0.8.2](docs/releases/v0.8.2.md)
 
 ## 설치
 
@@ -134,7 +135,7 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 <summary><b>zip으로 직접 설치하기</b></summary>
 <br>
 
-1. [OW-MapPicker.zip](https://github.com/no2thingmore/ow-map-picker-release/releases/latest/download/OW-MapPicker.zip)(약 10MB) 받기. 지난 버전은 [Releases](https://github.com/no2thingmore/ow-map-picker-release/releases)에
+1. [OW-MapPicker.zip](https://github.com/no2thingmore/ow-map-picker-release/releases/latest/download/OW-MapPicker.zip)(약 11MB) 받기. 지난 버전은 [Releases](https://github.com/no2thingmore/ow-map-picker-release/releases)에
 2. zip 파일 오른쪽 클릭 → **속성** → **차단 해제** 체크 → 확인. 안 하면 실행할 때마다 보안 경고
 3. 원하는 곳에 압축 풀기. `OW-MapPicker` 폴더가 생김
 4. 폴더 안의 **start.bat** 더블클릭. 필요한 것은 알아서 설치
