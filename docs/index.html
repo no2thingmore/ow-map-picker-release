@@ -5,8 +5,8 @@
 <meta name="google-site-verification" content="iW7dX4CgawFbVuh55kqrlvdH8QZOWC4l0NRZZ0WInyc" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>오버워치 영웅 추천 · 카운터픽 도우미 | 오버워치 영웅 선택 가이드</title>
-<meta name="description" content="오버워치 맵·밴·양 팀 조합을 화면에서 자동으로 읽고, 넥슨 공식 영웅 통계와 상성으로 지금 고를 영웅과 카운터픽을 추천하는 무료 Windows 프로그램. 게임 위 오버레이, 전적 기록, 맵별 통계까지.">
-<meta name="keywords" content="오버워치 영웅 추천, 오버워치 카운터픽, 오버워치 맵별 영웅, 오버워치 조합, 오버워치 오버레이, 오버워치 통계, 오버워치 전적">
+<meta name="description" content="오버워치 맵·밴·양 팀 조합을 화면에서 자동으로 읽고, 넥슨 공식 영웅 통계와 상성으로 지금 고를 영웅과 카운터픽을 추천하는 무료 Windows 프로그램. 전적 기록, 맵별 통계, 폰으로 보기까지.">
+<meta name="keywords" content="오버워치 영웅 추천, 오버워치 카운터픽, 오버워치 맵별 영웅, 오버워치 조합, 오버워치 통계, 오버워치 전적">
 <link rel="canonical" href="https://no2thingmore.github.io/ow-map-picker-release/">
 <meta name="theme-color" content="#101318">
 <link rel="icon" href="site/icon.svg" type="image/svg+xml">
@@ -46,7 +46,6 @@
     { "@type": "Question", "name": "가격은?", "acceptedAnswer": { "@type": "Answer", "text": "무료. 개인이 만든 비공식 도구, 광고나 결제 없음." } },
     { "@type": "Question", "name": "계정 정지 위험은?", "acceptedAnswer": { "@type": "Answer", "text": "게임 파일을 읽거나 고치지 않고, 게임에 아무것도 주입하지 않음. 화면을 캡처해 글자와 그림만 인식, 오버레이도 게임 위에 떠 있는 일반 창. 다만 블리자드가 공식으로 허용한 도구는 아님." } },
     { "@type": "Question", "name": "추천에 쓰는 통계는?", "acceptedAnswer": { "@type": "Answer", "text": "넥슨 오버워치 공식 영웅 통계(한국 · PC)의 맵·티어별 승률과 픽률, Counterwatch의 영웅 상성과 시너지. 경기가 적은 값은 표본 보정." } },
-    { "@type": "Question", "name": "오버레이가 안 보이면?", "acceptedAnswer": { "@type": "Answer", "text": "오버워치 화면 모드를 전체 창 모드로. 전체 화면(독점) 모드에서는 다른 창이 게임 위에 보이지 않을 수 있음." } },
     { "@type": "Question", "name": "휴대폰으로 보려면?", "acceptedAnswer": { "@type": "Answer", "text": "프로그램 화면 위쪽 설정 → 폰으로 켜고, 표시되는 주소를 같은 Wi-Fi의 휴대폰 브라우저에서 열기." } },
     { "@type": "Question", "name": "내 전적이 밖으로 전송되나?", "acceptedAnswer": { "@type": "Answer", "text": "전송하지 않음. 전적과 학습 데이터는 프로그램 폴더 안에만 저장. 인터넷은 통계, 영웅 그림, 새 버전을 받을 때만 사용." } }
   ]
@@ -117,20 +116,6 @@
 
       <div class="feat flip">
         <div class="txt">
-          <span class="tag">오버레이</span>
-          <h3 class="disp">게임 위 오버레이</h3>
-          <p>게임 화면 구석에 1~3순위와 내 영웅 점수, 상대 성향과 맞설 성향을 작게 표시.</p>
-          <ul>
-            <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>로 켜고 끄기</li>
-            <li>영웅 선택·점수판일 때만 보이게 하기도 가능</li>
-            <li>게임에 아무것도 주입하지 않는 일반 창</li>
-          </ul>
-        </div>
-        <div class="pics"><figure class="pic small"><img src="site/img/overlay.webp" width="598" height="487" alt="오버레이 창 예시: 1~3순위, 내 영웅, 상대 성향과 맞설 성향" loading="lazy"></figure></div>
-      </div>
-
-      <div class="feat">
-        <div class="txt">
           <span class="tag">전적</span>
           <h3 class="disp">전적과 추천 검증</h3>
           <p>판마다 맵, 결과, 내 픽, 밴, 양 팀을 얼굴 칸으로 저장. 그 판에서 가장 좋았을 영웅과 내 영웅의 순위도 함께 표시.</p>
@@ -143,7 +128,7 @@
         <div class="pics"><figure class="pic"><img src="site/img/history.webp" width="1600" height="1625" alt="전적 화면: 요약, 추천 검증, 포지션별, 영웅별·맵별 승률, 등급 범위 변화" loading="lazy"></figure></div>
       </div>
 
-      <div class="feat flip">
+      <div class="feat">
         <div class="txt">
           <span class="tag">통계</span>
           <h3 class="disp">메타 · 맵별 통계</h3>
@@ -152,7 +137,7 @@
         <div class="pics"><figure class="pic"><img src="site/img/stats.webp" width="1600" height="1313" alt="통계 화면: 그랜드마스터 경쟁전 역할별 메타 지수 Top 5, 밴률 Top 4, 맵 메타" loading="lazy"></figure></div>
       </div>
 
-      <div class="feat">
+      <div class="feat flip">
         <div class="txt">
           <span class="tag">자동 업데이트</span>
           <h3 class="disp">알아서 최신 버전</h3>
@@ -199,7 +184,6 @@
         <details><summary>가격은?</summary><p>무료. 개인이 만든 비공식 도구, 광고나 결제 없음.</p></details>
         <details><summary>계정 정지 위험은?</summary><p>게임 파일을 읽거나 고치지 않고, 게임에 아무것도 주입하지 않음. 화면을 캡처해 글자와 그림만 인식, 오버레이도 게임 위에 떠 있는 일반 창. 다만 블리자드가 공식으로 허용한 도구는 아님.</p></details>
         <details><summary>추천에 쓰는 통계는?</summary><p>넥슨 오버워치 공식 영웅 통계(한국 · PC)의 맵·티어별 승률과 픽률, Counterwatch의 영웅 상성과 시너지. 경기가 적은 값은 표본 보정. 계산 방법은 프로그램 목록 머리줄 '추천 점수' 옆 '?'에서 확인.</p></details>
-        <details><summary>오버레이가 안 보이면?</summary><p>오버워치 화면 모드를 <b>전체 창 모드</b>로 (설정 › 비디오 › 화면 모드). 전체 화면(독점) 모드에서는 다른 창이 게임 위에 보이지 않을 수 있음.</p></details>
         <details><summary>휴대폰으로 보려면?</summary><p>프로그램 화면 위쪽 <b>설정</b> → <b>폰</b>으로 켜고, 표시되는 주소를 같은 Wi-Fi의 휴대폰 브라우저에서 열기.</p></details>
         <details><summary>내 전적이 밖으로 전송되나?</summary><p>전송하지 않음. 전적과 학습 데이터는 프로그램 폴더 안에만 저장. 인터넷은 통계, 영웅 그림, 새 버전을 받을 때만 사용.</p></details>
       </div>
