@@ -44,7 +44,6 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    { "@type": "Question", "name": "가격은?", "acceptedAnswer": { "@type": "Answer", "text": "무료. 개인이 만든 비공식 도구, 광고나 결제 없음." } },
     { "@type": "Question", "name": "계정 정지 위험은?", "acceptedAnswer": { "@type": "Answer", "text": "게임 파일을 읽거나 고치지 않고, 게임에 아무것도 주입하지 않음. 화면을 캡처해 글자와 그림만 인식, 오버레이도 게임 위에 떠 있는 일반 창. 다만 블리자드가 공식으로 허용한 도구는 아님." } },
     { "@type": "Question", "name": "추천에 쓰는 통계는?", "acceptedAnswer": { "@type": "Answer", "text": "넥슨 오버워치 공식 영웅 통계(한국 · PC)의 맵·티어별 승률과 픽률, Counterwatch의 영웅 상성과 시너지. 경기가 적은 값은 표본 보정." } },
     { "@type": "Question", "name": "휴대폰으로 보려면?", "acceptedAnswer": { "@type": "Answer", "text": "프로그램 화면 위쪽 설정 → 폰으로 켜고, 표시되는 주소를 같은 Wi-Fi의 휴대폰 브라우저에서 열기." } },
@@ -61,6 +60,7 @@
     <nav class="nav" aria-label="페이지 안 이동">
       <a href="#features">기능</a><a href="guide.html">사용법</a><a href="releases.html">업데이트 내역</a><a href="#faq">자주 묻는 질문</a>
     </nav>
+    <a class="btn ghost gh" href="https://github.com/no2thingmore/ow-map-picker-release" aria-label="GitHub 저장소"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
     <a class="btn go" href="https://github.com/no2thingmore/ow-map-picker-release/releases/latest/download/OW-MapPicker.bat">무료로 받기</a>
   </div>
 </header>
@@ -119,17 +119,32 @@
         <div class="txt">
           <span class="tag">전적</span>
           <h3 class="disp">전적과 추천 검증</h3>
-          <p>판마다 맵, 결과, 내 픽, 밴, 양 팀을 얼굴 칸으로 저장. 그 판에서 가장 좋았을 영웅과 내 영웅의 순위도 함께 표시.</p>
+          <p>판마다 맵, 결과, 내 픽, 밴, 양 팀을 얼굴 칸으로 저장. 추천대로 골랐을 때 실제로 더 이겼는지 내 기록으로 확인.</p>
           <ul>
             <li>추천 1~3순위로 했을 때와 아닐 때 승률 비교</li>
-            <li>영웅별 · 맵별 승률, 포지션별 등급 범위 변화</li>
+            <li>영웅별 · 맵별 · 포지션별 승률</li>
+            <li>판이 많이 쌓여도 표는 많이 한 순으로 앞쪽만, 나머지는 표 안에서 스크롤</li>
             <li>잘못 나뉜 판 합치기, 결과 직접 고치기</li>
           </ul>
         </div>
-        <div class="pics"><figure class="pic"><img src="site/img/history.webp" width="1600" height="1625" alt="전적 화면: 요약, 추천 검증, 포지션별, 영웅별·맵별 승률, 등급 범위 변화" loading="lazy"></figure></div>
+        <div class="pics"><figure class="pic"><img src="site/img/history.webp" width="1600" height="1254" alt="전적 화면: 요약, 추천 검증, 포지션별 승률, 영웅별·맵별 표(많이 한 8개만 보이고 나머지는 표 안에서 스크롤)" loading="lazy"></figure></div>
       </div>
 
       <div class="feat">
+        <div class="txt">
+          <span class="tag">등급 범위</span>
+          <h3 class="disp">포지션별 등급 범위 변화</h3>
+          <p>점수판(Tab) 오른쪽 위 등급 범위를 판마다 기록해 돌격, 공격, 지원을 따로 그래프로. 막대는 그 판 범위(파랑 승리, 빨강 패배, 회색 결과 모름), 주황 선은 범위 가운데.</p>
+          <ul>
+            <li>지금 범위, 가장 높았던 범위, 승패를 한 줄로</li>
+            <li>처음 5판보다 최근 5판이 몇 단계 올랐는지 표시</li>
+            <li>막대에 마우스를 올리면 그 판 맵과 영웅</li>
+          </ul>
+        </div>
+        <div class="pics"><figure class="pic"><img src="site/img/rank.webp" width="1600" height="1014" alt="등급 범위 변화: 돌격·공격·지원마다 지금 범위, 처음 5판 대비 최근 5판 변화, 가장 높았던 범위, 승패와 판마다 범위 막대 그래프" loading="lazy"></figure></div>
+      </div>
+
+      <div class="feat flip">
         <div class="txt">
           <span class="tag">통계</span>
           <h3 class="disp">메타 · 맵별 통계</h3>
@@ -138,7 +153,7 @@
         <div class="pics"><figure class="pic"><img src="site/img/stats.webp" width="1600" height="1313" alt="통계 화면: 그랜드마스터 경쟁전 역할별 메타 지수 Top 5, 밴률 Top 4, 맵 메타" loading="lazy"></figure></div>
       </div>
 
-      <div class="feat flip">
+      <div class="feat">
         <div class="txt">
           <span class="tag">자동 업데이트</span>
           <h3 class="disp">알아서 최신 버전</h3>
@@ -182,7 +197,6 @@
     <div class="wrap">
       <h2 id="faq-h" class="disp">자주 묻는 질문</h2>
       <div class="faq">
-        <details><summary>가격은?</summary><p>무료. 개인이 만든 비공식 도구, 광고나 결제 없음.</p></details>
         <details><summary>계정 정지 위험은?</summary><p>게임 파일을 읽거나 고치지 않고, 게임에 아무것도 주입하지 않음. 화면을 캡처해 글자와 그림만 인식, 오버레이도 게임 위에 떠 있는 일반 창. 다만 블리자드가 공식으로 허용한 도구는 아님.</p></details>
         <details><summary>추천에 쓰는 통계는?</summary><p>넥슨 오버워치 공식 영웅 통계(한국 · PC)의 맵·티어별 승률과 픽률, Counterwatch의 영웅 상성과 시너지. 경기가 적은 값은 표본 보정. 계산 방법은 프로그램 목록 머리줄 '추천 점수' 옆 '?'에서 확인.</p></details>
         <details><summary>휴대폰으로 보려면?</summary><p>프로그램 화면 위쪽 <b>설정</b> → <b>폰</b>으로 켜고, 표시되는 주소를 같은 Wi-Fi의 휴대폰 브라우저에서 열기.</p></details>

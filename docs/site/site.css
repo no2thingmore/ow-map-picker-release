@@ -35,7 +35,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .skip { position: absolute; left: -9999px; } .skip:focus { left: 16px; top: 8px; z-index: 50; background: var(--accent); color: var(--accent-ink); min-height: 44px; display: inline-flex; align-items: center; padding: 0 14px; }
 
 /* ---- 머리 줄 ---- */
-.top { position: sticky; top: 0; z-index: 20; background: var(--top-bg); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top { position: sticky; top: 0; z-index: 20; background: var(--top-bg); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); container-type: inline-size; }  /* 아래 @container: 스크롤바 뺀 실제 폭으로 이름 글자 조절 */
 .top .wrap { display: flex; align-items: center; gap: 20px; min-height: 60px; }
 .brand { display: inline-flex; align-items: center; min-height: 44px; gap: 10px; color: var(--white); text-decoration: none; font-size: 19px; white-space: nowrap; }
 .brand img { width: 30px; height: 30px; }
@@ -54,6 +54,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .btn.ghost:hover { box-shadow: inset 0 0 0 1px var(--accent); }
 .btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .top .btn { min-height: 44px; padding: 0 14px; font-size: 15px; }
+/* GitHub 단추: 상단 줄 '무료로 받기' 왼쪽, 흰 테두리 대신 고양이 마크 + 글자. 좁은 화면은 마크만 */
+.top .gh { margin-right: -8px; gap: 8px; color: var(--text); }
+.top .gh:hover { color: var(--white); }
+.btn.gh svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }
 
 /* ---- 첫 화면 ---- */
 .hero { padding: 64px 0 0; }
@@ -166,10 +170,24 @@ code { font-size: 14px; background: var(--panel-2); padding: 1px 6px; color: var
   .minis { grid-template-columns: minmax(0, 1fr); }
   .split { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 720px) {
-  .wrap { padding: 0 16px; }
+/* 상단 줄: 글자가 두 줄로 꺾이지 않게. 좁아지면 GitHub는 마크만 → 메뉴 숨김 → (아주 좁으면) 이름 글자 숨김 */
+.top .btn, .nav a { white-space: nowrap; flex-shrink: 0; }
+@media (max-width: 1100px) {
+  .top .gh { width: 44px; padding: 0; margin-right: -8px; justify-content: center; }
+  .top .gh span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (max-width: 900px) {
   .nav { display: none; }
   .top .btn { margin-left: auto; min-height: 44px; }
+  .top .gh + .btn { margin-left: 0; }
+  .top .wrap { gap: 8px; }
+  .top .gh { margin-right: 0; }
+}
+@container (max-width: 349px) { .brand span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } }
+@media (max-width: 720px) {
+  .wrap { padding: 0 16px; }
+  .top .btn { padding: 0 12px; }
+  .top .gh { padding: 0; }
   .brand { min-height: 44px; }  /* 폰: 누를 곳 44px 안팎 */
   .hero { padding-top: 40px; }
   .shot { padding: 6px; margin-top: 32px; }
@@ -180,7 +198,8 @@ code { font-size: 14px; background: var(--panel-2); padding: 1px 6px; color: var
   th, td { padding: 10px 8px; }
   .btn { min-height: 48px; padding: 0 18px; }
 }
-@media (max-width: 400px) { .brand span { font-size: 16px; } .top .btn { padding: 0 10px; } }
+/* 좁은 폭: 이름 글자를 상단 줄 실제 폭(스크롤바 뺀 폭)에 맞춰 줄임. 이름 글자 폭 ≈ 글자 크기 × 9.4(Firefox 기울임 포함), 나머지(여백·마크·단추) ≈ 250px */
+@media (max-width: 440px) { .brand span { font-size: clamp(12px, calc((100cqw - 250px) / 9.4), 16px); } .top .btn { padding: 0 10px; } .top .gh { padding: 0; } }
 
 /* 사용법: 처음 3단계 (실제 순서라 번호) · 펼쳐 보는 세부 */
 .doc .quick { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--panel); counter-reset: q; }
