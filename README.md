@@ -11,7 +11,7 @@
 <a href="https://github.com/no2thingmore/ow-map-picker-release/releases/latest"><img src="https://img.shields.io/github/v/release/no2thingmore/ow-map-picker-release?label=%EC%B5%9C%EC%8B%A0%20%EB%B2%84%EC%A0%84&color=f99e1a&labelColor=1b1e25" alt="최신 버전"></a>
 </p>
 
-이번 판에 고르기 좋은 영웅을 바로 알려 주는 **무료 Windows 프로그램**. 영웅 선택 화면과 점수판(Tab)에서 맵, 밴, 양 팀 영웅을 읽고 넥슨 공식 통계와 상성으로 계산.
+지금 고르기 좋은 영웅과 적 조합 카운터픽을 바로 추천하는 **무료 Windows 프로그램**. 영웅 선택 화면과 점수판(Tab)에서 맵, 밴, 양 팀 영웅을 읽고 넥슨 공식 영웅 통계와 상성으로 계산.
 
 Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개 페이지](https://no2thingmore.github.io/ow-map-picker-release/) | [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html)
 
@@ -40,6 +40,7 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 - 맵, 밴, 양 팀 영웅이 저절로 들어옴. 영웅 선택 화면과 점수판에서 대기실 금지까지 밴 5명, 내 영웅, 등급 범위를 읽음. 처음 보는 얼굴은 한 번 알려 주면 기억
 - [폰으로 추천 영웅 확인](#폰으로-추천-영웅-확인). PC와 같은 Wi-Fi면 됨
 - 추천대로 골랐을 때 승률. 판마다 결과와 베스트 픽이 남고, 티어별 메타와 맵별 통계도 있음
+- 포지션별 등급 범위 변화 그래프. 점수판 오른쪽 위 등급 범위를 판마다 기록
 - 업데이트는 알아서. 새 버전이 나오면 알림, 자동 업데이트를 켜면 게임을 쉴 때 받음
 
 ## 화면 구성
