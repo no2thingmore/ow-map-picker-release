@@ -104,10 +104,10 @@ Windows 10, 11 (64비트) | 베타 | 개인이 만든 비공식 도구 | [소개
 
 **다운로드하기** 한 번이면 끝. 새 버전이 나오면 화면 위에 알림, 누르면 알아서 바꾸고 다시 켬. 전적, 배운 얼굴, 설정은 그대로.
 
-<img src="docs/update-banner.png" alt="새 버전 알림: 새 버전 v0.9.6, 업데이트 방식 직접 받기와 자동 업데이트" width="700">
+<img src="docs/update-banner.png" alt="새 버전 알림: 새 버전 v0.9.7, 업데이트 방식 직접 받기와 자동 업데이트" width="700">
 
 - **자동 업데이트**를 고르면 오버워치를 2분 넘게 안 할 때 받음. 게임 중에는 받지 않음
-- 버전마다 바뀐 점: [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html). 사진으로 보기: [v0.9.6](docs/releases/v0.9.6.md), [v0.9.4](docs/releases/v0.9.4.md), [v0.9.3](docs/releases/v0.9.3.md), [v0.9.2](docs/releases/v0.9.2.md), [v0.9.0](docs/releases/v0.9.0.md), [v0.8.9](docs/releases/v0.8.9.md), [v0.8.8](docs/releases/v0.8.8.md), [v0.8.7](docs/releases/v0.8.7.md), [v0.8.6](docs/releases/v0.8.6.md), [v0.8.5](docs/releases/v0.8.5.md), [v0.8.4](docs/releases/v0.8.4.md), [v0.8.3](docs/releases/v0.8.3.md), [v0.8.2](docs/releases/v0.8.2.md)
+- 버전마다 바뀐 점: [업데이트 내역](https://no2thingmore.github.io/ow-map-picker-release/releases.html). 사진으로 보기: [v0.9.7](docs/releases/v0.9.7.md), [v0.9.6](docs/releases/v0.9.6.md), [v0.9.4](docs/releases/v0.9.4.md), [v0.9.3](docs/releases/v0.9.3.md), [v0.9.2](docs/releases/v0.9.2.md), [v0.9.0](docs/releases/v0.9.0.md), [v0.8.9](docs/releases/v0.8.9.md), [v0.8.8](docs/releases/v0.8.8.md), [v0.8.7](docs/releases/v0.8.7.md), [v0.8.6](docs/releases/v0.8.6.md), [v0.8.5](docs/releases/v0.8.5.md), [v0.8.4](docs/releases/v0.8.4.md), [v0.8.3](docs/releases/v0.8.3.md), [v0.8.2](docs/releases/v0.8.2.md)
 
 ## 설치
 
