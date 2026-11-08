@@ -1,0 +1,60 @@
+오버워치 영웅 선택 가이드 (OW-MapPicker) 사용 허락 조건
+Copyright (c) 2026 no2thingmore. 모든 권리 보유 (All rights reserved).
+
+이 저장소와 배포 파일(OW-MapPicker.bat, OW-MapPicker.zip, 그 안의 모든 파일)에 들어 있는
+프로그램 코드, 화면, 그림, 문서(아래 "소프트웨어")의 저작권은 저작권자에게 있음.
+이 문서에 적힌 것 말고는 어떤 권리도 허락하지 않음.
+
+허락하는 것
+1. 개인이 공식 주소에서 소프트웨어를 내려받아 자기 PC에서 비상업적으로 실행하는 것
+   (설치·업데이트·실행에 필요한 범위의 복사 포함)
+2. 소프트웨어를 소개하면서 공식 주소로 링크하는 것
+   공식 주소: https://github.com/no2thingmore/ow-map-picker-release
+
+저작권자의 서면 허락 없이 금지하는 것
+1. 실행에 필요한 범위를 넘어 소프트웨어의 전부 또는 일부를 복제, 수정, 번역, 개작하는 것
+2. 소프트웨어나 그 일부(코드, 화면 구성, 계산 방식 구현)를 바탕으로 다른 프로그램을 만드는 것
+3. 소프트웨어나 수정본을 다른 곳에 올리거나 배포, 판매, 대여하는 것
+4. 저작권 표시와 이 문서를 지우거나 바꾸는 것
+
+다른 권리자의 자료
+- 영웅·맵·티어 그림과 이름, Overwatch 상표는 Blizzard Entertainment, Inc.의 것
+- 영웅 통계는 넥슨 오버워치 공식 영웅 통계, 상성·시너지는 Counterwatch에서 받음
+- 글꼴(Barlow Condensed, Noto Sans KR)은 각 글꼴의 SIL Open Font License 1.1을 따름 (fonts 폴더의 OFL 파일)
+- 이 자료들은 이 문서의 대상이 아니고, 각 권리자의 조건을 따름
+
+책임 제한
+소프트웨어는 있는 그대로 제공. 저작권자는 소프트웨어 사용으로 생긴 어떤 손해에도 책임지지 않음.
+
+허락 문의: https://github.com/no2thingmore/ow-map-picker-release/issues
+
+----------------------------------------------------------------------
+
+OW-MapPicker License (English summary; the Korean text above governs)
+Copyright (c) 2026 no2thingmore. All rights reserved.
+
+The program code, screens, images and documents in this repository and in its release files
+(the "Software") are the property of the copyright holder. No rights are granted except as stated here.
+
+Permitted
+1. Downloading the Software from the official address and running it on your own PC
+   for personal, non-commercial use (including copies needed to install, update and run it).
+2. Linking to the official address when introducing the Software:
+   https://github.com/no2thingmore/ow-map-picker-release
+
+Prohibited without written permission from the copyright holder
+1. Copying, modifying, translating or adapting all or part of the Software beyond what is needed to run it.
+2. Creating any other program based on the Software or any part of it
+   (code, screen layout, implementation of its calculations).
+3. Uploading, distributing, selling or renting the Software or a modified version elsewhere.
+4. Removing or altering the copyright notice or this document.
+
+Third-party material
+Hero, map and rank images and names and the Overwatch trademark belong to Blizzard Entertainment, Inc.
+Hero statistics come from Nexon's official Overwatch hero statistics; matchup and synergy data from Counterwatch.
+Fonts (Barlow Condensed, Noto Sans KR) are under the SIL Open Font License 1.1.
+This material is not covered by this document and follows its owners' terms.
+
+Limitation of liability
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER IS NOT LIABLE
+FOR ANY DAMAGES ARISING FROM THE USE OF THE SOFTWARE.

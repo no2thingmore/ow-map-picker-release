@@ -252,6 +252,7 @@ TEMPLATE = """<!doctype html>
   <div class="wrap">
     <p>개인이 만든 <b>비공식</b> 팬 제작 도구. Blizzard Entertainment, 넥슨과 관련 없음. Overwatch는 Blizzard Entertainment, Inc.의 상표.</p>
     <p>프로그램 안 '업데이트 내역'과 같은 내용.</p>
+    <p>© 2026 no2thingmore. 모든 권리 보유. 개인 PC에서 실행하는 것만 허락, 코드 복제·수정·재배포와 이 코드를 바탕으로 한 프로그램 제작 금지 (<a href="https://github.com/no2thingmore/ow-map-picker-release/blob/main/LICENSE">사용 허락 조건</a>).</p>
     <p><a href="./">처음으로</a> · <a href="guide.html">사용법</a> · <a href="{repo}/releases">GitHub 전체 버전</a></p>
   </div>
 </footer>
