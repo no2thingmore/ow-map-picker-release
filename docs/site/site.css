@@ -315,3 +315,7 @@ body.lb-open { overflow: hidden; }
   .doc .rel.old .rel-ver { font-size: 24px; }
   .doc .rel-sum { font-size: 19px; }
 }
+
+/* 폰으로 추천 영웅 확인 (2026-11-08): 4단계 그림 크게, 아래에 글로 단계 + 안 열릴 때 표 */
+.pic.phone-guide { margin: 0 0 28px; }
+.phone-how .steps { margin: 0; }
