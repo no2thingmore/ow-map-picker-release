@@ -317,5 +317,5 @@ body.lb-open { overflow: hidden; }
 }
 
 /* 폰으로 추천 영웅 확인 (2026-11-08): 4단계 그림 크게, 아래에 글로 단계 + 안 열릴 때 표 */
-.pic.phone-guide { margin: 0 0 28px; }
+.pic.phone-guide { max-width: 760px; margin: 0 0 28px; }  /* 2026-11-08 사용자 요청: 그림이 너무 커서 줄임 */
 .phone-how .steps { margin: 0; }
