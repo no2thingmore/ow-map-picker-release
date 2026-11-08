@@ -65,6 +65,7 @@
     <p>프로그램 안 '업데이트 내역'과 같은 내용.</p>
     <p>© 2026 no2thingmore. 모든 권리 보유. 개인 PC에서 실행하는 것만 허락, 코드 복제·수정·재배포와 이 코드를 바탕으로 한 프로그램 제작 금지 (<a href="https://github.com/no2thingmore/ow-map-picker-release/blob/main/LICENSE">사용 허락 조건</a>).</p>
     <p><a href="./">처음으로</a> · <a href="guide.html">사용법</a> · <a href="https://github.com/no2thingmore/ow-map-picker-release/releases">GitHub 전체 버전</a></p>
+    <p class="hits" hidden>조회수 <b id="hits">0</b></p>
   </div>
 </footer>
 <script>(() => {
@@ -107,6 +108,19 @@
   $("#log").addEventListener("click", (e) => { const b = e.target.closest("[data-zoom]"); if (b) open(b); });
   lb.addEventListener("click", (e) => { if (!e.target.closest(".lb-item, .lb-cap") || e.target.closest(".lb-x")) close(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) { e.preventDefault(); close(); } });
+})();
+// 조회수: 공개 카운트(TOTAL.json)를 받아 숫자만 표시. 못 받으면 줄을 숨김. 숫자는 30분마다 갱신
+(() => {
+  var el = document.getElementById("hits");
+  if (!el) return;
+  fetch("https://no2thingmore.goatcounter.com/counter/TOTAL.json").then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (d) {
+      var n = parseInt(String(d.count).replace(/[^0-9]/g, ""), 10);
+      if (!isFinite(n)) return;
+      el.textContent = n.toLocaleString("ko-KR");
+      var box = el.closest(".hits"); if (box) box.hidden = false;
+    }).catch(function () {});
 })();</script>
+<script data-goatcounter="https://no2thingmore.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
