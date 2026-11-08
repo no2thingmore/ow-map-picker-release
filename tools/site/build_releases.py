@@ -195,7 +195,6 @@ SCRIPT = """(() => {
       var n = parseInt(String(d.count).replace(/[^0-9]/g, ""), 10);
       if (!isFinite(n)) return;
       el.textContent = n.toLocaleString("ko-KR");
-      var box = el.closest(".hits"); if (box) box.hidden = false;
     }).catch(function () {});
 })();"""
 
@@ -266,7 +265,7 @@ TEMPLATE = """<!doctype html>
     <p>프로그램 안 '업데이트 내역'과 같은 내용.</p>
     <p>© 2026 no2thingmore. 모든 권리 보유. 개인 PC에서 실행하는 것만 허락, 코드 복제·수정·재배포와 이 코드를 바탕으로 한 프로그램 제작 금지 (<a href="https://github.com/no2thingmore/ow-map-picker-release/blob/main/LICENSE">사용 허락 조건</a>).</p>
     <p><a href="./">처음으로</a> · <a href="guide.html">사용법</a> · <a href="{repo}/releases">GitHub 전체 버전</a></p>
-    <p class="hits" hidden>조회수 <b id="hits">0</b></p>
+    <p class="hits">조회수 <b id="hits">0</b></p>
   </div>
 </footer>
 <script>{script}</script>

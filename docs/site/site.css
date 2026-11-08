@@ -140,7 +140,7 @@ td b { color: var(--white); }
 .foot { padding: 36px 0 56px; color: var(--muted); font-size: 14px; line-height: 1.7; }
 .foot p { margin: 0 0 6px; max-width: 860px; }
 .foot a { color: var(--text-2); }
-.foot .hits { margin-top: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.foot .hits { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 15px; font-variant-numeric: tabular-nums; }
 .foot .hits b { color: var(--text-2); font-weight: 700; }
 
 /* 사용법 페이지 */
