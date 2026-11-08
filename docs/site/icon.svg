@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- 맵 픽 도우미 아이콘: 주황 원(과녁) 안의 맵 핀. 직접 그린 그림 (게임 로고 아님) -->
-  <rect width="64" height="64" rx="14" fill="#11141a"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#ff9c2a" stroke-width="5"/>
-  <path d="M32 15c-6.6 0-12 5.2-12 11.7C20 35.5 32 48 32 48s12-12.5 12-21.3C44 20.2 38.6 15 32 15z" fill="#ff9c2a"/>
-  <circle cx="32" cy="27" r="4.6" fill="#11141a"/>
+  <!-- 오버워치 영웅 선택 가이드 아이콘 (ow): 모서리 깎은 주황 칸 + 흰 기호. 직접 그린 도형 (게임 로고 아님). tools/icon/make_icon.py로 만듦 -->
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb547"/><stop offset="1" stop-color="#ff7f1a"/></linearGradient></defs>
+  <polygon points="18.00,5.20 58.80,5.20 58.80,46.00 46.00,58.80 5.20,58.80 5.20,18.00" fill="url(#g)" stroke="url(#g)" stroke-width="4.4" stroke-linejoin="round"/>
+  <rect x="28.40" y="9.00" width="7.20" height="12.00" rx="1.5" fill="#fff"/><rect x="28.40" y="43.00" width="7.20" height="12.00" rx="1.5" fill="#fff"/><rect x="9.00" y="28.40" width="12.00" height="7.20" rx="1.5" fill="#fff"/><rect x="43.00" y="28.40" width="12.00" height="7.20" rx="1.5" fill="#fff"/><polygon points="32.00,25.00 39.00,32.00 32.00,39.00 25.00,32.00" fill="#fff" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/>
 </svg>

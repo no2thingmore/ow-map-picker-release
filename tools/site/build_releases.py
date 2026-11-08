@@ -1,10 +1,11 @@
 """소개 페이지의 '업데이트 내역'(docs/releases.html)을 개발 저장소의 changes.json으로 만든다.
 
 사용: python tools/site/build_releases.py <개발 저장소의 changes.json>
-- 버전마다 날짜 · 바뀐 점 · 사진(changes.json의 media)을 넣고, 사진 그림은 docs/site/img/changes/로 복사한다.
-- 제목은 changes.json의 summary(요약 한 줄), 없으면 docs/releases/v<버전>.md 첫 줄. 그 파일이 있으면 '사진으로 자세히' 링크를 단다.
-- 바뀐 점 앞 [추가]/[개선]/[고침]은 색 표시로 (프로그램 '업데이트 내역' 화면과 같은 모양).
-- 화면 규칙: 최신 버전을 맨 위에 크게, 바뀐 점이 많으면 5개만 보이고 나머지는 펼쳐 보기, 0.8.0 전 버전은 한 묶음으로 접어 둠.
+- 버전마다 날짜 · 요약 한 줄 · 바뀐 점 · 사진(changes.json의 media)을 넣고, 사진 그림은 docs/site/img/changes/로 복사한다.
+- 요약은 changes.json의 summary, 없으면 docs/releases/v<버전>.md 첫 줄. 그 파일이 있으면 '사진으로 자세히' 링크를 단다.
+- 모양은 프로그램 안 '업데이트 내역' 화면(개발 저장소 changes.html)과 같게 (2026-11-08 사용자 요청):
+  왼쪽 버전 목록 + 오른쪽 마름모 시간줄, 바뀐 점은 모두 보이게, [추가]/[개선]/[고침]은 색 표시, 개선 전/후 사진 나란히, 누르면 크게.
+  프로그램 화면 위쪽의 업데이트 방식 칸은 넣지 않는다.
 """
 import html
 import json
@@ -20,8 +21,6 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DOCS = os.path.join(ROOT, "docs")
 REPO = "https://github.com/no2thingmore/ow-map-picker-release"
 SITE = "https://no2thingmore.github.io/ow-map-picker-release/"
-SHOW = 5          # 버전마다 처음 보이는 바뀐 점 개수
-OPEN_FROM = (0, 8, 0)  # 이 버전부터는 펼친 채로, 그 전은 '이전 버전' 묶음
 esc = html.escape
 TAGS = None  # GitHub에 실제로 있는 릴리스 (없는 버전은 '받기' 링크를 안 단다)
 
@@ -48,23 +47,18 @@ TAG = re.compile(r"^\[(추가|개선|고침)\]\s*")
 TAG_CLS = {"추가": "add", "개선": "imp", "고침": "fix"}
 
 
-def li(t):
-    m = TAG.match(t)
-    if not m:
-        return f"<li>{esc(t)}</li>"
-    return f"<li><span class=\"it-tag {TAG_CLS[m.group(1)]}\">{m.group(1)}</span><span>{esc(t[m.end():])}</span></li>"
+def item_list(items):
+    if not items:
+        return ""
+    if not any(TAG.match(t) for t in items):
+        return f"<ul>{''.join(f'<li>{esc(t)}</li>' for t in items)}</ul>"
 
-
-def ul(items):
-    tagged = any(TAG.match(t) for t in items)
-    return f"<ul class=\"rel-items{' tg' if tagged else ''}\">{''.join(li(t) for t in items)}</ul>"
-
-
-def items_html(items):
-    if len(items) <= SHOW + 1:
-        return ul(items)
-    return (ul(items[:SHOW])
-            + f"<details class=\"more\"><summary>바뀐 점 {len(items) - SHOW}개 더 보기</summary>{ul(items[SHOW:])}</details>")
+    def li(t):
+        m = TAG.match(t)
+        if not m:
+            return f"<li><span></span><span>{esc(t)}</span></li>"
+        return f"<li><span class=\"it-tag {TAG_CLS[m.group(1)]}\">{m.group(1)}</span><span>{esc(t[m.end():])}</span></li>"
+    return f"<ul class=\"tg\">{''.join(li(t) for t in items)}</ul>"
 
 
 def copy_img(src_root, rel):
@@ -78,58 +72,55 @@ def copy_img(src_root, rel):
     return f"site/img/changes/{esc(name)}", w, h
 
 
-def img_tag(src_root, rel, alt):
+def zoom_img(src_root, rel, alt):
     url, w, h = copy_img(src_root, rel)
-    return f"<img src=\"{url}\" width=\"{w}\" height=\"{h}\" alt=\"{esc(alt)}\" loading=\"lazy\">"
+    return (f"<button type=\"button\" class=\"zoom\" data-zoom aria-label=\"사진 크게 보기\">"
+            f"<img src=\"{url}\" width=\"{w}\" height=\"{h}\" alt=\"{esc(alt)}\" loading=\"lazy\" decoding=\"async\"></button>")
 
 
 def media_html(media, src_root, version, prev):
-    """사진: {before, after} 쌍은 왼쪽 '개선 전 v이전'(회색) · 오른쪽 '개선 후 v이번'(주황) 나란히 (프로그램 업데이트 내역 화면과 같은 모양, 2026-11-05), {src} 한 장은 폭 전체"""
+    """{before, after} 쌍은 왼쪽 '개선 전 v이전'(회색) · 오른쪽 '개선 후 v이번'(주황) 나란히, {src} 한 장은 폭 전체"""
     if not media:
         return ""
     figs = []
     for m in media:
         cap = f"<figcaption>{esc(m['caption'])}</figcaption>" if m.get("caption") else ""
+        alt = m.get("alt", "")
         if m.get("src"):
-            figs.append(f"<figure class=\"pic\">{img_tag(src_root, m['src'], m.get('alt', ''))}{cap}</figure>")
+            figs.append(f"<figure class=\"rel-fig one\">{zoom_img(src_root, m['src'], alt)}{cap}</figure>")
             continue
         frm = m.get("from") or prev
-        figs.append("<figure class=\"pic cmp\"><div class=\"cmp-grid\">"
-                    f"<div><div class=\"cmp-lab before\">개선 전{(' <b>v' + esc(frm) + '</b>') if frm else ''}</div>{img_tag(src_root, m['before'], (m.get('alt', '') + ' (개선 전)').strip())}</div>"
-                    f"<div><div class=\"cmp-lab after\">개선 후 <b>v{esc(version)}</b></div>{img_tag(src_root, m['after'], (m.get('alt', '') + ' (개선 후)').strip())}</div>"
+        figs.append("<figure class=\"rel-fig pair\"><div class=\"cmp\">"
+                    f"<div><div class=\"cmp-lab before\">개선 전{(' <b>v' + esc(frm) + '</b>') if frm else ''}</div>{zoom_img(src_root, m['before'], (alt + ' (개선 전)').strip())}</div>"
+                    f"<div><div class=\"cmp-lab after\">개선 후 <b>v{esc(version)}</b></div>{zoom_img(src_root, m['after'], (alt + ' (개선 후)').strip())}</div>"
                     f"</div>{cap}</figure>")
     return f"<div class=\"rel-media\">{''.join(figs)}</div>"
 
 
 def links_html(v, has_md):
-    a = [f"<a class=\"btn ghost sm\" href=\"{REPO}/releases/tag/v{v}\">이 버전 받기</a>"] if has_release(v) else []
+    a = [f"<a href=\"{REPO}/releases/tag/v{v}\">이 버전 받기</a>"] if has_release(v) else []
     if has_md:
-        a.append(f"<a class=\"btn ghost sm\" href=\"{REPO}/blob/main/docs/releases/v{v}.md\">사진으로 자세히</a>")
-    return f"<div class=\"rel-links\">{''.join(a)}</div>" if a else ""
+        a.append(f"<a href=\"{REPO}/blob/main/docs/releases/v{v}.md\">사진으로 자세히</a>")
+    return f"<p class=\"rel-links\">{''.join(a)}</p>" if a else ""
 
 
-def article(e, src_root, latest=False, prev=None):
+def entry(e, src_root, latest, prev):
     v, date = e["version"], e.get("date", "")
     title, has_md = title_of(v)
     title = e.get("summary") or title
-    head = (f"<header class=\"rel-head\"><h2 class=\"rel-ver disp\" id=\"v{v}\">v{esc(v)}</h2>"
-            + (f"<span class=\"rel-badge\">최신</span>" if latest else "")
-            + f"<time datetime=\"{esc(date)}\">{esc(date.replace('-', '. '))}.</time>"
-            + (f"<p class=\"rel-title\">{esc(title)}</p>" if title else "") + "</header>")
-    return (f"<article class=\"rel{' latest' if latest else ''}\" aria-labelledby=\"v{v}\">{head}"
-            f"{items_html(e['items'])}{media_html(e.get('media'), src_root, v, prev)}{links_html(v, has_md)}</article>")
+    head = (f"<div class=\"rel-head\"><h2 class=\"rel-ver\">v{esc(v)}</h2>"
+            + ("<span class=\"rel-badge\">최신</span>" if latest else "")
+            + (f"<time datetime=\"{esc(date)}\">{esc(date)}</time>" if date else "") + "</div>")
+    return (f"<li class=\"rel {'now' if latest else 'old'}\" id=\"v{esc(v)}\">{head}"
+            + (f"<p class=\"rel-sum\">{esc(title)}</p>" if title else "")
+            + item_list(e["items"]) + media_html(e.get("media"), src_root, v, prev) + links_html(v, has_md) + "</li>")
 
 
-def old_row(e):
+def vers_link(e, latest):
     v, date = e["version"], e.get("date", "")
-    title, has_md = title_of(v)
-    title = e.get("summary") or title
-    get = f"<a href=\"{REPO}/releases/tag/v{v}\">이 버전 받기</a>" if has_release(v) else "GitHub 릴리스 없음"
-    extra = f" · <a href=\"{REPO}/blob/main/docs/releases/v{v}.md\">사진으로 자세히</a>" if has_md else ""
-    return (f"<details class=\"more old\" id=\"v{v}\"><summary><span class=\"rel-ver-sm\">v{esc(v)}</span>"
-            f"<span class=\"old-meta\">{esc(date.replace('-', '. '))}.{(' · ' + esc(title)) if title else ''} · 바뀐 점 {len(e['items'])}개</span></summary>"
-            f"{ul(e['items'])}"
-            f"<p class=\"old-links\">{get}{extra}</p></details>")
+    cls, mark = (' class="now"', " <small>최신</small>") if latest else ("", "")
+    return (f"<a href=\"#v{esc(v)}\" data-ver=\"{esc(v)}\"{cls}><span>v{esc(v)}{mark}</span>"
+            + (f"<span class=\"d\">{esc(date)}</span>" if date else "") + "</a>")
 
 
 def main(changes_path):
@@ -143,19 +134,58 @@ def main(changes_path):
     src_root = os.path.dirname(os.path.abspath(changes_path))
     data = json.load(open(changes_path, encoding="utf-8"))
     data.sort(key=lambda e: ver_tuple(e["version"]), reverse=True)
-    new = [e for e in data if ver_tuple(e["version"]) >= OPEN_FROM]
-    old = [e for e in data if ver_tuple(e["version"]) < OPEN_FROM]
-    top = new[0]
-    toc = "".join(f"<li><a href=\"#v{e['version']}\">v{esc(e['version'])}</a></li>" for e in new) + f"<li><a href=\"#older\">이전 버전 {len(old)}개</a></li>"
-    body = "".join(article(e, src_root, latest=(e is top), prev=data[i + 1]["version"] if i + 1 < len(data) else None) for i, e in enumerate(new))
-    page = TEMPLATE.format(latest=esc(top["version"]), date=esc(top.get("date", "")), toc=toc, body=body,
-                           older="".join(old_row(e) for e in old), n_old=len(old), first_old=esc(old[0]["version"]) if old else "",
-                           last_old=esc(old[-1]["version"]) if old else "", site=SITE, repo=REPO)
+    top = data[0]
+    vers = "".join(vers_link(e, e is top) for e in data)
+    log = "".join(entry(e, src_root, e is top, data[i + 1]["version"] if i + 1 < len(data) else None) for i, e in enumerate(data))
+    page = TEMPLATE.format(latest=esc(top["version"]), date=esc(top.get("date", "")), vers=vers, log=log, site=SITE, repo=REPO, script=SCRIPT)
     out = os.path.join(DOCS, "releases.html")
     with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write(page)
-    print(out, len(page) // 1024, "KB,", len(new), "버전 펼침 +", len(old), "버전 묶음")
+    print(out, len(page) // 1024, "KB,", len(data), "버전")
 
+
+# 버전 목록: 보고 있는 버전 강조. 사진: 누르면 확대 창(쌍은 나란히), 바깥·✕·Esc로 닫고 눌렀던 사진으로 포커스. 프로그램 changes.html과 같은 동작
+SCRIPT = """(() => {
+  const $ = (s) => document.querySelector(s);
+  if ("IntersectionObserver" in window) {
+    const seen = new Map(), links = [...document.querySelectorAll("#vers a")];
+    const io = new IntersectionObserver((ents) => {
+      for (const x of ents) seen.set(x.target, x.isIntersecting ? x.boundingClientRect.top : null);
+      const top = [...seen].filter(([, t]) => t != null).sort((a, b) => a[1] - b[1])[0];
+      links.forEach((a) => a.classList.toggle("cur", !!top && top[0].id === "v" + a.dataset.ver));
+    }, { rootMargin: "-10% 0px -60% 0px" });
+    document.querySelectorAll(".rel").forEach((el) => io.observe(el));
+  }
+  const lb = $("#lb"), body = $("#lbBody");
+  let from = null;
+  const open = (btn) => {
+    const fig = btn.closest("figure"), imgs = [...fig.querySelectorAll(".zoom img")], labs = [...fig.querySelectorAll(".cmp-lab")], cap = fig.querySelector("figcaption");
+    body.textContent = "";
+    const grid = document.createElement("div");
+    grid.className = "lb-grid" + (imgs.length > 1 ? " pair" : "");
+    imgs.forEach((im, i) => {
+      const item = document.createElement("div");
+      item.className = "lb-item";
+      if (labs[i]) item.appendChild(labs[i].cloneNode(true));
+      const big = document.createElement("img");
+      big.src = im.getAttribute("src"); big.alt = im.alt;
+      item.appendChild(big); grid.appendChild(item);
+    });
+    body.appendChild(grid);
+    if (cap) { const p = document.createElement("p"); p.className = "lb-cap"; p.textContent = cap.textContent; body.appendChild(p); }
+    from = btn; lb.hidden = false; document.body.classList.add("lb-open");
+    requestAnimationFrame(() => lb.classList.add("in"));
+    $(".lb-x").focus();
+  };
+  const close = () => {
+    lb.classList.remove("in"); lb.hidden = true; document.body.classList.remove("lb-open");
+    if (from && from.isConnected) from.focus();
+    from = null;
+  };
+  $("#log").addEventListener("click", (e) => { const b = e.target.closest("[data-zoom]"); if (b) open(b); });
+  lb.addEventListener("click", (e) => { if (!e.target.closest(".lb-item, .lb-cap") || e.target.closest(".lb-x")) close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) { e.preventDefault(); close(); } });
+})();"""
 
 TEMPLATE = """<!doctype html>
 <html lang="ko">
@@ -167,6 +197,7 @@ TEMPLATE = """<!doctype html>
 <meta name="description" content="오버워치 영웅 선택 가이드의 버전별 바뀐 점. 최신 v{latest}({date})부터 처음 버전까지, 사진과 내려받기 링크.">
 <link rel="canonical" href="{site}releases.html">
 <meta name="theme-color" content="#101318">
+<link rel="icon" href="site/favicon.ico" sizes="any">
 <link rel="icon" href="site/icon.svg" type="image/svg+xml">
 <meta property="og:type" content="article">
 <meta property="og:locale" content="ko_KR">
@@ -191,17 +222,16 @@ TEMPLATE = """<!doctype html>
   </div>
 </header>
 
-<main id="main" class="doc">
+<main id="main" class="doc chg">
   <div class="wrap">
-    <h1 class="disp">업데이트 내역</h1>
-    <p class="lead">버전마다 바뀐 점. 새 버전이 나오면 프로그램이 알림, 업데이트해도 전적과 설정은 그대로.</p>
-    <nav aria-label="버전 목차"><ul class="toc">{toc}</ul></nav>
-    <div class="rel-list">{body}</div>
-    <section id="older" class="older" aria-labelledby="older-h">
-      <h2 id="older-h" class="disp">이전 버전</h2>
-      <p>v{first_old}부터 v{last_old}까지 {n_old}개. 버전을 누르면 바뀐 점이 펼쳐짐.</p>
-      {older}
-    </section>
+    <div class="chg-head">
+      <h1 class="disp"><b>업데이트</b> 내역</h1>
+      <a href="{repo}/releases">지난 버전 파일: GitHub 릴리스</a>
+    </div>
+    <div class="page">
+      <nav class="vers" id="vers" aria-label="버전 목록"><div class="vers-lab">버전</div>{vers}</nav>
+      <ol class="log" id="log" aria-label="버전별 바뀐 점">{log}</ol>
+    </div>
   </div>
 
   <div class="cta">
@@ -212,6 +242,11 @@ TEMPLATE = """<!doctype html>
   </div>
 </main>
 
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="사진 크게 보기" hidden>
+  <button type="button" class="lb-x" aria-label="닫기">✕</button>
+  <div class="lb-body" id="lbBody"></div>
+</div>
+
 <footer class="foot">
   <div class="wrap">
     <p>개인이 만든 <b>비공식</b> 팬 제작 도구. Blizzard Entertainment, 넥슨과 관련 없음. Overwatch는 Blizzard Entertainment, Inc.의 상표.</p>
@@ -219,6 +254,7 @@ TEMPLATE = """<!doctype html>
     <p><a href="./">처음으로</a> · <a href="guide.html">사용법</a> · <a href="{repo}/releases">GitHub 전체 버전</a></p>
   </div>
 </footer>
+<script>{script}</script>
 </body>
 </html>
 """
